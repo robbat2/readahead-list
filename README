@@ -12,6 +12,9 @@ readahead.
 This has mainly been developed in response to Gentoo Bug #64724
 http://bugs.gentoo.org/show_bug.cgi?id=64724
 
+The application very specifically does NOT output any errors unless you have
+--debug on. This is in case a file isn't on your system between boots.
+
 Syntax:
 readahead-list [OPTIONS] FILE [FILE...]
 
@@ -28,5 +31,4 @@ OPTIONS:
 	Should be obvious.
 --help
 	Stop looking at me!
-
 
