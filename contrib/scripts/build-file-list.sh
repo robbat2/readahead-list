@@ -1,7 +1,7 @@
 #!/bin/bash
-# Copyright 2005 Robin H. Johnson <robbat2@gentoo.org>
+# Copyright 2005 Robin H. Johnson <robbat2@orbis-terrarum.net>
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /code/convert/cvsroot/infrastructure/readahead-list/contrib/scripts/build-file-list.sh,v 1.1 2005/03/23 04:38:26 robbat2 Exp $
+# $Header: /code/convert/cvsroot/infrastructure/readahead-list/contrib/scripts/build-file-list.sh,v 1.2 2005/03/23 06:03:46 robbat2 Exp $
 source set-math.sh
 
 EXCLUDE_REGEX='^/(sys|dev|proc|var/run|var/log)|\.keep$|,v$'

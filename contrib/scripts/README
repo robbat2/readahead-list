@@ -1,6 +1,6 @@
-# Copyright 2005 Robin H. Johnson <robbat2@gentoo.org>
+# Copyright 2005 Robin H. Johnson <robbat2@orbis-terrarum.net>
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /code/convert/cvsroot/infrastructure/readahead-list/contrib/scripts/README,v 1.1 2005/03/23 04:38:26 robbat2 Exp $
+# $Header: /code/convert/cvsroot/infrastructure/readahead-list/contrib/scripts/README,v 1.2 2005/03/23 06:03:46 robbat2 Exp $
 
 Here are a few scripts I hacked up to build a possible list of files to perform
 readahead(2) on. 

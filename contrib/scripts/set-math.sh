@@ -1,12 +1,12 @@
 #!/bin/bash
-# Copyright 2005 Robin H. Johnson <robbat2@gentoo.org>
+# Copyright 2005 Robin H. Johnson <robbat2@orbis-terrarum.net>
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /code/convert/cvsroot/infrastructure/readahead-list/contrib/scripts/set-math.sh,v 1.1 2005/03/23 04:38:26 robbat2 Exp $
+# $Header: /code/convert/cvsroot/infrastructure/readahead-list/contrib/scripts/set-math.sh,v 1.2 2005/03/23 06:03:46 robbat2 Exp $
 
 GREP=/bin/grep
 
 # Call me nuts, I just wrote set functions in shell!
-# -Robin H. Johnson <robbat2@gentoo.org>
+# -Robin H. Johnson <robbat2@orbis-terrarum.net>
 set_helper_comm() {
 	opt="$1"
 	a="$2"
