@@ -1,3 +1,11 @@
+2005-03-23 06:06  Robin H. Johnson <robbat2@orbis-terrarum.net>
+
+	Added:
+		cvs2cl-update.sh (1.1)
+		cvs2cl.ufile (1.1)
+
+	changelog goodness.
+
 2005-03-23 06:04  Robin H. Johnson <robbat2@orbis-terrarum.net>
 
 	Changed:
