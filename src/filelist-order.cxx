@@ -52,8 +52,8 @@ int __STACK_DEBUG__ = 0;
 using namespace std;
 
 static char* program_name = "readhead-list";
-static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/src/filelist-order.cxx,v 1.3 2005/03/28 06:33:15 robbat2 Exp $";
-static char* program_id = "$Id: filelist-order.cxx,v 1.3 2005/03/28 06:33:15 robbat2 Exp $";
+static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/src/filelist-order.cxx,v 1.4 2005/03/28 09:36:35 robbat2 Exp $";
+static char* program_id = "$Id: filelist-order.cxx,v 1.4 2005/03/28 09:36:35 robbat2 Exp $";
 
 static int flag_input_file = 0;
 static int flag_input_stdin = 0;
@@ -400,15 +400,23 @@ void command_help() {
 
 void process_fieldorder(char* orderString) {
 	assert(orderString != NULL);
-	bool field_filename_done = false;
+	char input[BUFFER_SIZE];
+	strncpy(input,orderString,BUFFER_SIZE);
+
 	DEBUG("param(hex): %x\n",orderString);
 	DEBUG("param(str): %s\n",orderString);
 	DEBUG("param length: %d\n",strlen(orderString));
-	char **inputp = &orderString;
+	char *inputp = input;
+	char **inputpp = (&inputp);
 	const char* delim = " ,:;";
-	DEBUG("process_fieldorder-initial-strsep(delim='%s',inputp=%x,*inputp=%x)\n",delim,inputp,*inputp);
-	char* tok = strsep (inputp,delim);
+	
+	//DEBUG("process_fieldorder-initial-strsep(delim='%s',inputpp=%x,inputp=%x)\n",delim,inputpp,inputp);
+	
+	char* tok = strsep (inputpp,delim);
 	DEBUG("process_fieldorder-strsep-result: %x\n",tok);
+	
+	bool field_filename_done = false;
+
 	while(tok != NULL) {
 		DEBUG("process_fieldorder-got-token: %s\n",tok);
 		bool reverse = false;
@@ -454,7 +462,7 @@ void process_fieldorder(char* orderString) {
 			flag_rootneeded = 1;
 		}
 		// next run
-		tok = strsep(inputp,delim);
+		tok = strsep(inputpp,delim);
 	}
 	DEBUG("process_fieldorder-done-parse-loop\n");
 	// force in filename if it isn't there
@@ -500,9 +508,7 @@ void process_opts(int argc, char** argv) {
 						break;
 					case 4: // fields
 						flag_fields = 1;
-						int len = strlen(optarg);
-						param_fields = (new char[len]);
-						strncpy(param_fields,optarg,len);
+						param_fields = optarg;
 						break;
 					default:
 						command_error();
@@ -524,9 +530,7 @@ void process_opts(int argc, char** argv) {
 				break;
 			case 'f':
 				flag_fields = 1;
-				int len = strlen(optarg);
-				param_fields = (new char[len]);
-				strncpy(param_fields,optarg,len);
+				param_fields = optarg;
 				break;
 			default:
 				command_error();
