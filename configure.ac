@@ -10,7 +10,7 @@
 
 AC_PREREQ(2.59)
 # version stamp is 0.YYYYMMDD.HHMM
-AC_INIT([readahead-list],[0.20050322.2148],[Robin H. Johnson robbat2@orbis-terrarum.net],[readahead-list])
+AC_INIT([readahead-list],[0.20050322.2220],[Robin H. Johnson robbat2@orbis-terrarum.net],[readahead-list])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([dist-bzip2])

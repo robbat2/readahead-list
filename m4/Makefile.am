@@ -8,13 +8,13 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-# Install m4 macros in this directory
-m4datadir = $(datadir)/aclocal
-
-# List your m4 macros here
-m4macros = 
-
-# The following is boilerplate
-m4data_DATA = $(m4macros) 
-EXTRA_DIST = $(m4data_DATA) 
+### # Install m4 macros in this directory
+### m4datadir = $(datadir)/aclocal
+### 
+### # List your m4 macros here
+### m4macros = 
+### 
+### # The following is boilerplate
+### m4data_DATA = $(m4macros) 
+### EXTRA_DIST = $(m4data_DATA) 
 
