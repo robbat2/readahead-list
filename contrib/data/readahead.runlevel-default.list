@@ -1,3 +1,6 @@
+# Sample readahead(2) dataset for Gentoo boot sequence
+# This is the initial dataset for everything in the 'default' runlevel.
+# Copyright (C) 2005 Robin Hugh Johnson <robbat2@orbis-terrarum.net>
 /bin/awk
 /bin/bash
 /bin/cat
