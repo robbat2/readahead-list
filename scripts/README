@@ -1,0 +1,10 @@
+Here are a few scripts I hacked up to build a possible list of files to perform
+readahead(2) on. 
+
+There were written to parse a file, and descend into any possible script
+WITHOUT executing the script or binary.
+
+The set handling stuff is a major bottleneck, causing exponential slowdown :-(.
+
+For better logging, we need to look at either Linux accounting, or some form of
+auditing system.
