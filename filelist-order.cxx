@@ -30,8 +30,8 @@ bool __DEBUG__ = false;
 using namespace std;
 
 static char* program_name = "readhead-list";
-static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/file-order-block.cxx,v 1.5 2005/03/22 07:27:59 robbat2 Exp $";
-static char* program_id = "$Id: file-order-block.cxx,v 1.5 2005/03/22 07:27:59 robbat2 Exp $";
+static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/filelist-order.cxx,v 1.1 2005/03/22 08:31:08 robbat2 Exp $";
+static char* program_id = "$Id: filelist-order.cxx,v 1.1 2005/03/22 08:31:08 robbat2 Exp $";
 
 static int flag_debug = 0;
 static int flag_verbose = 0;
@@ -158,7 +158,7 @@ int mapcmp(const mapkey *a, const mapkey *b, vector<OrderField*> *ofa) {
 				case FILENAME: case_entry(FILENAME);
 			}
 #undef case_entry
-			cmp = cmp * (of.reverse ? 1 : -1);
+			cmp = cmp * (of.reverse ? -1 : 1);
 			CMP_NE_RET;
 		}
 	}
@@ -172,20 +172,19 @@ mapkey* build_mapkey(char *filename) {
 	DEBUG_STACK_UP;
 	DEBUG("%s\n","build_mapkey-init");
 	int fd;
-
-	mapkey *mk = new mapkey;
-	mk->sb = new (struct stat);
-
-	// if you ever see this in the debug output, something is wrong.
-	mk->first_block = -2; 
-	mk->filename = filename;
+	mapkey *mk = NULL;
 
 	fd = open(filename, O_RDONLY);
 	if(fd >= 0) {
-		if( fstat( fd, mk->sb ) == -1 || !S_ISREG(mk->sb->st_mode)) {
-			delete mk;
-			mk = NULL;
+		struct stat *tmpsb = new (struct stat);
+		if( fstat( fd, tmpsb ) == -1 || S_ISDIR(tmpsb->st_mode)) {
+			// bad, do nothing
 		} else {
+			mk = new mapkey;
+			mk->sb = tmpsb;
+			// if you ever see this in the debug output, something is wrong.
+			mk->first_block = -2; 
+			mk->filename = filename;
 			int block = 0; // temp space
 			int ioctl_ret = ioctl( fd, FIBMAP, &block );
 			if( ioctl_ret == -1 ) {
@@ -198,7 +197,7 @@ mapkey* build_mapkey(char *filename) {
 			}
 			mk->first_block = block;
 		}
-	} 
+	}
 	close(fd);
 	DEBUG("build_mapkey-done\n");
 	DEBUG_STACK_DOWN;
@@ -278,7 +277,7 @@ void process_input(MULTIMAP_COMPLETE_TYPE &m) {
 	while(cin.good()) {
 		cin.getline(buffer,BUFFER_SIZE);
 		int filename_len = cin.gcount()-1; //faster than strlen
-		if(filename_len > 0) {
+		if(filename_len > 0 && buffer[0] != '#') {
 			char* filename = new char[filename_len+1];
 			strncpy(filename,buffer,filename_len+1);
 			DEBUG_ON;
