@@ -1,9 +1,9 @@
 # Copyright 2005 Robin H. Johnson <robbat2@gentoo.org>
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/Makefile,v 1.9 2005/03/22 08:32:23 robbat2 Exp $
+# $Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/Makefile,v 1.10 2005/03/23 03:41:31 robbat2 Exp $
 
 PN = readahead-list
-PV = 0.20050320.2320
+PV = 0.20050322.1945
 P = $(PN)-$(PV)
 SORTER = filelist-order
 BIN = $(PN)   $(SORTER)
