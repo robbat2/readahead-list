@@ -1,7 +1,7 @@
 // Copyright 2005 Robin H. Johnson <robbat2@gentoo.org>
 // Distributed under the terms of the GNU General Public License v2
 // Based on code originally written by Erich Schubert <erich@debian.org>.
-// $Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.4 2005/03/21 04:54:10 robbat2 Exp $
+// $Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.5 2005/03/21 07:05:47 robbat2 Exp $
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,8 +17,8 @@
 #include <errno.h>
 
 static char* program_name = "readhead-list";
-static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.4 2005/03/21 04:54:10 robbat2 Exp $";
-static char* program_id = "$Id: readahead-list.c,v 1.4 2005/03/21 04:54:10 robbat2 Exp $";
+static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.5 2005/03/21 07:05:47 robbat2 Exp $";
+static char* program_id = "$Id: readahead-list.c,v 1.5 2005/03/21 07:05:47 robbat2 Exp $";
 
 static int flag_debug = 0;
 static int flag_verbose = 0;
@@ -140,7 +140,10 @@ void process_files(char* filename) {
 				memcpy(buffer, iter, next-iter);
 				// replace newline with string terminator
 				buffer[next-iter]='\0';
-				process_file(buffer);
+				// we allow # as the first character in a line, to show comments
+				if(buffer[0] != '#') {
+					process_file(buffer);
+				}
 			}
 			iter = next + 1;
 		} else {
