@@ -30,6 +30,7 @@
 
 #include <fcntl.h>
 #include <linux/fs.h>
+#include <../config.h>
 
 #ifndef BUFFER_SIZE
 #define BUFFER_SIZE 2048
@@ -51,8 +52,8 @@ int __STACK_DEBUG__ = 0;
 using namespace std;
 
 static char* program_name = "readhead-list";
-static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/src/filelist-order.cxx,v 1.2 2005/03/23 05:58:13 robbat2 Exp $";
-static char* program_id = "$Id: filelist-order.cxx,v 1.2 2005/03/23 05:58:13 robbat2 Exp $";
+static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/src/filelist-order.cxx,v 1.3 2005/03/28 06:33:15 robbat2 Exp $";
+static char* program_id = "$Id: filelist-order.cxx,v 1.3 2005/03/28 06:33:15 robbat2 Exp $";
 
 static int flag_input_file = 0;
 static int flag_input_stdin = 0;
@@ -61,6 +62,8 @@ static int flag_verbose = 0;
 static int flag_version = 0;
 static int flag_help = 0;
 static int flag_fields = 0;
+static int flag_rootneeded = 0;
+
 static struct option long_options[] = {
 	{"verbose", 0, &flag_verbose, 1},
 	{"debug", 0, &flag_debug, 1},
@@ -72,9 +75,12 @@ static struct option long_options[] = {
 };
 static char* short_options = "f:vdhV";
 
+// 64-bit integers are needed for some fields
+#define BASE_DATATYPE long long int
+
 struct mapkey {
 	struct stat *sb;
-	long first_block;
+	BASE_DATATYPE first_block;
 	char* filename;
 };
 
@@ -87,7 +93,7 @@ struct OrderField {
 		}
 };
 
-inline const int numcmp(const long a, const long b) {
+inline const int numcmp(const BASE_DATATYPE a, const BASE_DATATYPE b) {
 	DEBUG_STACK_UP;
 	DEBUG("%s\n","numcmp-init");
 	int ret = 0;
@@ -101,21 +107,22 @@ inline const int numcmp(const long a, const long b) {
 	return ret;
 }
 
-inline const long func_ST_DEV(mapkey a) 		{ return ((a).sb->st_dev); }
-inline const long func_ST_INO(mapkey a) 		{ return ((a).sb->st_ino); }
-inline const long func_ST_MODE(mapkey a) 		{ return ((a).sb->st_mode); }
-inline const long func_ST_NLINK(mapkey a) 		{ return ((a).sb->st_nlink); }
-inline const long func_ST_UID(mapkey a) 		{ return ((a).sb->st_uid); }
-inline const long func_ST_GID(mapkey a) 		{ return ((a).sb->st_gid); }
-inline const long func_ST_RDEV(mapkey a) 		{ return ((a).sb->st_rdev); }
-inline const long func_ST_SIZE(mapkey a) 		{ return ((a).sb->st_size); }
-inline const long func_ST_BLKSIZE(mapkey a) 	{ return ((a).sb->st_blksize); }
-inline const long func_ST_BLOCKS(mapkey a) 		{ return ((a).sb->st_blocks); }
-inline const long func_ST_ATIME(mapkey a) 		{ return ((a).sb->st_atime); }
-inline const long func_ST_MTIME(mapkey a) 		{ return ((a).sb->st_mtime); }
-inline const long func_ST_CTIME(mapkey a) 		{ return ((a).sb->st_ctime); }
-inline const long func_IOCTL_FIBMAP(mapkey a)	{ return ((a).first_block); }
+inline const BASE_DATATYPE func_ST_DEV(mapkey a) 		{ return ((a).sb->st_dev); }
+inline const BASE_DATATYPE func_ST_INO(mapkey a) 		{ return ((a).sb->st_ino); }
+inline const BASE_DATATYPE func_ST_MODE(mapkey a) 		{ return ((a).sb->st_mode); }
+inline const BASE_DATATYPE func_ST_NLINK(mapkey a) 		{ return ((a).sb->st_nlink); }
+inline const BASE_DATATYPE func_ST_UID(mapkey a) 		{ return ((a).sb->st_uid); }
+inline const BASE_DATATYPE func_ST_GID(mapkey a) 		{ return ((a).sb->st_gid); }
+inline const BASE_DATATYPE func_ST_RDEV(mapkey a) 		{ return ((a).sb->st_rdev); }
+inline const BASE_DATATYPE func_ST_SIZE(mapkey a) 		{ return ((a).sb->st_size); }
+inline const BASE_DATATYPE func_ST_BLKSIZE(mapkey a) 	{ return ((a).sb->st_blksize); }
+inline const BASE_DATATYPE func_ST_BLOCKS(mapkey a) 		{ return ((a).sb->st_blocks); }
+inline const BASE_DATATYPE func_ST_ATIME(mapkey a) 		{ return ((a).sb->st_atime); }
+inline const BASE_DATATYPE func_ST_MTIME(mapkey a) 		{ return ((a).sb->st_mtime); }
+inline const BASE_DATATYPE func_ST_CTIME(mapkey a) 		{ return ((a).sb->st_ctime); }
+inline const BASE_DATATYPE func_IOCTL_FIBMAP(mapkey a)	{ return ((a).first_block); }
 inline const char* func_FILENAME(mapkey a) 		{ return ((a).filename); }
+
 
 inline const int cmp_ST_DEV(mapkey a, mapkey b) 	{ return  numcmp(func_ST_DEV(a),func_ST_DEV(b)); }
 inline const int cmp_ST_INO(mapkey a, mapkey b) 	{ return  numcmp(func_ST_INO(a),func_ST_INO(b)); }
@@ -266,20 +273,20 @@ void printItem(PAIR_COMPLETE_TYPE p,vector <OrderField*> *ofa) {
 				OrderField of = *ofp;
 #define case_entry(fmt,func) printf("%s"fmt,(first ? "" : " "),func_##func(mk)); break;
 				switch(of.type) {
-					case ST_DEV: case_entry("%ld",ST_DEV);
-					case ST_INO: case_entry("%ld",ST_INO);
-					case ST_MODE: case_entry("%ld",ST_MODE);
-					case ST_NLINK: case_entry("%ld",ST_NLINK);
-					case ST_UID: case_entry("%ld",ST_UID);
-					case ST_GID: case_entry("%ld",ST_GID);
-					case ST_RDEV: case_entry("%ld",ST_RDEV);
-					case ST_SIZE: case_entry("%ld",ST_SIZE);
-					case ST_BLKSIZE: case_entry("%ld",ST_BLKSIZE);
-					case ST_BLOCKS: case_entry("%ld",ST_BLOCKS);
-					case ST_ATIME: case_entry("%ld",ST_ATIME);
-					case ST_MTIME: case_entry("%ld",ST_MTIME);
-					case ST_CTIME: case_entry("%ld",ST_CTIME);
-					case IOCTL_FIBMAP: case_entry("%ld",IOCTL_FIBMAP);
+					case ST_DEV: case_entry("%lld",ST_DEV);
+					case ST_INO: case_entry("%lld",ST_INO);
+					case ST_MODE: case_entry("%lld",ST_MODE);
+					case ST_NLINK: case_entry("%lld",ST_NLINK);
+					case ST_UID: case_entry("%lld",ST_UID);
+					case ST_GID: case_entry("%lld",ST_GID);
+					case ST_RDEV: case_entry("%lld",ST_RDEV);
+					case ST_SIZE: case_entry("%lld",ST_SIZE);
+					case ST_BLKSIZE: case_entry("%lld",ST_BLKSIZE);
+					case ST_BLOCKS: case_entry("%lld",ST_BLOCKS);
+					case ST_ATIME: case_entry("%lld",ST_ATIME);
+					case ST_MTIME: case_entry("%lld",ST_MTIME);
+					case ST_CTIME: case_entry("%lld",ST_CTIME);
+					case IOCTL_FIBMAP: case_entry("%lld",IOCTL_FIBMAP);
 					case FILENAME:	case_entry("%s",FILENAME);
 				}
 #undef case_entry
@@ -343,7 +350,7 @@ void command_error() {
 void command_version() {
 #define LEN 1024
 	char s[LEN];
-	snprintf(s,LEN,"%s: %s\n",program_name,program_id);
+	snprintf(s,LEN,"%s: %s\n",program_name,PACKAGE_VERSION);
 #undef LEN
 	fprintf(stdout,s);
 }
@@ -356,32 +363,33 @@ void command_help() {
 			"Loads lists from FILE and performs readahead(2) on each entry.\n"\
 			"\n"\
 			"Options:\n"\
-			"  [-f|--fields] F  Specify custom sorting fields.\n"\
-			"  [-v|--verbose]   Print all calculation fields in result.\n"\
+			"  [-f|--fields] F1,F2,...  Specify custom sorting fields.\n"\
+			"  [-v|--verbose]           Print all calculation fields in result.\n"\
 			"%s"\
-			"  [-h|--help]      Stop looking at me!\n"\
-			"  [-V|--version]   As the name says.\n"\
+			"  [-h|--help]              Stop looking at me!\n"\
+			"  [-V|--version]           As the name says.\n"\
 			"\n"\
 			"Fields for -f (default position in brackets):\n"\
-			"  stat.st_dev      (1)- device\n"\
-			"  stat.st_ino      (3)- inode\n"\
-			"  stat.st_mode        - protection\n"\
-			"  stat.st_nlink       - number of hard links\n"\
-			"  stat.st_uid         - user ID of owner\n"\
-			"  stat.st_gid         - group ID of owner\n"\
-			"  stat.st_rdev        - device type (if inode device)\n"\
-			"  stat.st_size        - total size, in bytes\n"\
-			"  stat.st_blksize     - blocksize for filesystem I/O\n"\
-			"  stat.st_blocks      - number of blocks allocated\n"\
-			"  stat.st_atime       - time of last access\n"\
-			"  stat.st_mtime       - time of last modification\n"\
-			"  stat.st_ctime       - time of last status change\n"\
-			"  ioctl.fibmap     (2)- position of first block of file\n"\
-			"  raw.filename     (4)- the filename, including full path\n"\
-			"Each field can also be followed by a '-' to invert it's order.\n"\
+			"  stat.st_dev     - device\n"\
+			"  stat.st_ino     - inode\n"\
+			"  stat.st_mode    - protection\n"\
+			"  stat.st_nlink   - number of hard links\n"\
+			"  stat.st_uid     - user ID of owner\n"\
+			"  stat.st_gid     - group ID of owner\n"\
+			"  stat.st_rdev    - device type (if inode device)\n"\
+			"  stat.st_size    - total size, in bytes\n"\
+			"  stat.st_blksize - blocksize for filesystem I/O\n"\
+			"  stat.st_blocks  - number of blocks allocated\n"\
+			"  stat.st_atime   - time of last access\n"\
+			"  stat.st_mtime   - time of last modification\n"\
+			"  stat.st_ctime   - time of last status change\n"\
+			"  ioctl.fibmap    - position of first block of file (root only)\n"\
+			"  raw.filename    - the filename, including full path\n"\
+			"Prefix a field with '-' to invert it's order.\n"\
+			"Default order is stat.st_dev,ioctl.fibmap,stat.st_ino\n"\
 			,program_name,
 #ifdef INSANE_DEBUG_MODE
-			"  [-d|--debug]     Print internal debugging.\n"
+			"  [-d|--debug]             Print internal debugging.\n"
 #else
 			""
 #endif //INSANE_DEBUG_MODE
@@ -390,9 +398,75 @@ void command_help() {
 #undef LEN
 }
 
+void process_fieldorder(char* orderString) {
+	assert(orderString != NULL);
+	bool field_filename_done = false;
+	DEBUG("param(hex): %x\n",orderString);
+	DEBUG("param(str): %s\n",orderString);
+	DEBUG("param length: %d\n",strlen(orderString));
+	char **inputp = &orderString;
+	const char* delim = " ,:;";
+	DEBUG("process_fieldorder-initial-strsep(delim='%s',inputp=%x,*inputp=%x)\n",delim,inputp,*inputp);
+	char* tok = strsep (inputp,delim);
+	DEBUG("process_fieldorder-strsep-result: %x\n",tok);
+	while(tok != NULL) {
+		DEBUG("process_fieldorder-got-token: %s\n",tok);
+		bool reverse = false;
+		OrderField_Type oft;
+		// check for leading -
+		if(tok[0] == '-') {
+			reverse = true;
+			// force it null to compare easier
+			tok[0] = 0; 
+			// and advance
+			tok++;
+		}
+		// time for some fun
+#define CMP(str,res)	if(0 == strcmp(tok,str)) { oft = res; }
+#define ECMP(str,res)	else CMP(str,res)
+		CMP("stat.st_dev",ST_DEV)
+			ECMP("stat.st_ino",ST_INO)
+			ECMP("stat.st_mode",ST_MODE)
+			ECMP("stat.st_nlink",ST_NLINK)
+			ECMP("stat.st_uid",ST_UID)
+			ECMP("stat.st_gid",ST_GID)
+			ECMP("stat.st_rdev",ST_RDEV)
+			ECMP("stat.st_size",ST_SIZE)
+			ECMP("stat.st_blksize",ST_BLKSIZE)
+			ECMP("stat.st_blocks",ST_BLOCKS)
+			ECMP("stat.st_atime",ST_ATIME)
+			ECMP("stat.st_mtime",ST_MTIME)
+			ECMP("stat.st_ctime",ST_CTIME)
+			ECMP("ioctl.fibmap",IOCTL_FIBMAP)
+			ECMP("raw.filename",FILENAME)
+		else {
+			DEBUG("process_fieldorder-got-bad-token: %s\n",tok);
+			command_error();
+		}
+		// add to list
+		myOrder->push_back(new OrderField(oft,reverse));
+		// for forcing uniqueness
+		if(oft == FILENAME) {
+			field_filename_done = true;
+		}
+		// FIBMAP needs root
+		if(oft == IOCTL_FIBMAP) {
+			flag_rootneeded = 1;
+		}
+		// next run
+		tok = strsep(inputp,delim);
+	}
+	DEBUG("process_fieldorder-done-parse-loop\n");
+	// force in filename if it isn't there
+	if(!field_filename_done) {
+		DEBUG("process_fieldorder-forcing-filename\n");
+		myOrder->push_back(new OrderField(FILENAME,false));
+	}
+}
+
 void process_opts(int argc, char** argv) {
 	myOrder = new vector<OrderField*>;
-	char param_fields[BUFFER_SIZE];
+	char *param_fields = NULL;
 	program_name = argv[0];
 	DEBUG("before-loop: optind:%d opterr:%d optopt:%d optarg:%x\n",optind,opterr,optopt,optarg);
 	while(1) {
@@ -426,14 +500,16 @@ void process_opts(int argc, char** argv) {
 						break;
 					case 4: // fields
 						flag_fields = 1;
-						strncpy(param_fields,optarg,BUFFER_SIZE);
+						int len = strlen(optarg);
+						param_fields = (new char[len]);
+						strncpy(param_fields,optarg,len);
 						break;
 					default:
 						command_error();
 						break;
 				}
 				break;
-			// nope, short option
+				// nope, short option
 			case 'v':
 				flag_verbose = 1;
 				break;
@@ -448,7 +524,9 @@ void process_opts(int argc, char** argv) {
 				break;
 			case 'f':
 				flag_fields = 1;
-				strncpy(param_fields,optarg,BUFFER_SIZE);
+				int len = strlen(optarg);
+				param_fields = (new char[len]);
+				strncpy(param_fields,optarg,len);
 				break;
 			default:
 				command_error();
@@ -468,64 +546,17 @@ void process_opts(int argc, char** argv) {
 	if(flag_version || flag_help) {
 		exit(0);
 	}
-	bool field_filename_done = false;
-	if(flag_fields && param_fields != NULL) {
-		DEBUG("param: %s\n",param_fields);
-		DEBUG("param length: %d\n",strlen(param_fields));
-		char *input = &(param_fields[0]);
-		char **inputp = &input;
-		//const char* delim = " ,:;\t\n\0";
-		const char* delim = ",";
-		char* tok = strsep (inputp,delim);
-		while(tok != NULL) {
-			bool reverse = false;
-			OrderField_Type oft;
-			int len = strlen (tok);
-			if(tok[len-1] == '-') {
-				reverse = true;
-				tok[len-1] = 0; // force it null to compare easier
-			}
-#define CMP(str,res)	if(0 == strcmp(tok,str)) { oft = res; }
-#define ECMP(str,res)	else CMP(str,res)
-			CMP("stat.st_dev",ST_DEV)
-			ECMP("stat.st_ino",ST_INO)
-			ECMP("stat.st_mode",ST_MODE)
-			ECMP("stat.st_nlink",ST_NLINK)
-			ECMP("stat.st_uid",ST_UID)
-			ECMP("stat.st_gid",ST_GID)
-			ECMP("stat.st_rdev",ST_RDEV)
-			ECMP("stat.st_size",ST_SIZE)
-			ECMP("stat.st_blksize",ST_BLKSIZE)
-			ECMP("stat.st_blocks",ST_BLOCKS)
-			ECMP("stat.st_atime",ST_ATIME)
-			ECMP("stat.st_mtime",ST_MTIME)
-			ECMP("stat.st_ctime",ST_CTIME)
-			ECMP("ioctl.fibmap",IOCTL_FIBMAP)
-			ECMP("raw.filename",FILENAME)
-			else command_error();
-			myOrder->push_back(new OrderField(oft,reverse));
-			if(oft == FILENAME) field_filename_done = true;
-			// next run
-			tok = strsep(inputp,delim);
-		}
-	} else {
-		// default fields
-		myOrder->push_back(new OrderField(ST_DEV,false));
-		myOrder->push_back(new OrderField(IOCTL_FIBMAP,false));
-		myOrder->push_back(new OrderField(ST_INO,false));
+	// handle the default
+	if(param_fields == NULL) {
+		flag_fields = 1;
+		param_fields = "stat.st_dev,ioctl.fibmap,stat.st_ino,raw.filename";
 	}
-	// force in filename if it isn't there
-	if(!field_filename_done) {
-		myOrder->push_back(new OrderField(FILENAME,false));
-	}
+	process_fieldorder(param_fields);
 }
 
 
 int main(int argc, char** argv) {
 	DEBUG_STACK_UP;
-	if(getuid() != 0) {
-		WARNING("ioctl(FIBMAP) is limited to root only! Results may be less than optimal.\n");
-	}
 	MULTIMAP_COMPLETE_TYPE  m;
 	set<const char*> hs;
 
@@ -533,6 +564,9 @@ int main(int argc, char** argv) {
 	// safety
 	if(optind == 0) {
 		optind = argc;
+	}
+	if(optind > 0 && flag_rootneeded && getuid() != 0) {
+		WARNING("ioctl(FIBMAP) is limited to root only! Results may be less than optimal.\n");
 	}
 	for(int i = optind; i<argc;i++) {
 		istream *is;
