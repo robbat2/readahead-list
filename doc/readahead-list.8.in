@@ -1,0 +1,21 @@
+.TH READAHEAD-LIST: "1" "March 2005" "readahead-list: @PACKAGE_VERSION@" "User Commands"
+.SH NAME
+readahead-list: \- manual page for readahead-list: @PACKAGE_VERSION@
+.SH SYNOPSIS
+.B readahead-list
+[\fIOPTION\fR]... [\fIFILE\fR]...
+.SH DESCRIPTION
+Loads lists from FILE and performs readahead(2) on each entry.
+.SH OPTIONS
+.TP
+\fB\-v\fR \fB\-\-verbose\fR
+Print name of each successfully loaded file.
+.TP
+\fB\-d\fR \fB\-\-debug\fR
+Print out status messages while processing.
+.TP
+\fB\-h\fR \fB\-\-help\fR
+Stop looking at me!
+.TP
+\fB\-V\fR \fB\-\-version\fR
+As the name says.

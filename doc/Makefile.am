@@ -8,3 +8,19 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
+man_MANS = filelist-order.1 readahead-list.8
+EXTRA_DIST = filelist-order.1.in readahead-list.8.in
+CLEANFILES = $(man_MANS)
+SUFFIXES = .in
+
+.in:
+	@RM@ -f $@ $@-t
+	@SED@ \
+	  -e 's!@''PACKAGE_VERSION''@!@PACKAGE_VERSION@!' \
+	  -e 's!@''sysconfdir''@!@sysconfdir@!' \
+	  -e 's!@''bindir''@!$(bindir)!g' \
+	  -e 's!@''libexecdir''@!$(libexecdir)!g' \
+	  -e 's!@''localstatedir''@!$(localstatedir)!g' \
+	$< > $@-t
+	@MV@ $@-t $@
+

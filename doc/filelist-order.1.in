@@ -1,0 +1,69 @@
+.TH FILELIST-ORDER: "1" "March 2005" "filelist-order: @PACKAGE_VERSION@" "User Commands"
+.SH NAME
+filelist-order: \- manual page for filelist-order: @PACKAGE_VERSION@
+.SH SYNOPSIS
+.B filelist-order
+[\fIOPTION\fR]... [\fIFILE\fR]...
+.SH DESCRIPTION
+Loads lists from FILE and performs readahead(2) on each entry.
+.SH OPTIONS
+.TP
+[\-f|\-\-fields] F1,F2,...
+Specify custom sorting fields.
+.TP
+[\-v|\-\-verbose]
+Print all calculation fields in result.
+.TP
+[\-h|\-\-help]
+Stop looking at me!
+.TP
+[\-V|\-\-version]
+As the name says.
+.SS "Fields for -f (default position in brackets):"
+.TP
+stat.st_dev
+(1)\- device
+.TP
+stat.st_ino
+(3)\- inode
+.TP
+stat.st_mode
+\- protection
+.TP
+stat.st_nlink
+\- number of hard links
+.TP
+stat.st_uid
+\- user ID of owner
+.TP
+stat.st_gid
+\- group ID of owner
+.TP
+stat.st_rdev
+\- device type (if inode device)
+.TP
+stat.st_size
+\- total size, in bytes
+.TP
+stat.st_blksize
+\- blocksize for filesystem I/O
+.TP
+stat.st_blocks
+\- number of blocks allocated
+.TP
+stat.st_atime
+\- time of last access
+.TP
+stat.st_mtime
+\- time of last modification
+.TP
+stat.st_ctime
+\- time of last status change
+.TP
+ioctl.fibmap
+(2)\- position of first block of file
+.TP
+raw.filename
+(4)\- the filename, including full path
+.PP
+Each field can also be followed by a '\-' to invert it's order.
