@@ -12,8 +12,8 @@
 #include <errno.h>
 
 static char* program_name = "readhead-list";
-static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.2 2005/03/20 04:29:21 robbat2 Exp $";
-static char* program_id = "$Id: readahead-list.c,v 1.2 2005/03/20 04:29:21 robbat2 Exp $";
+static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.3 2005/03/21 02:32:43 robbat2 Exp $";
+static char* program_id = "$Id: readahead-list.c,v 1.3 2005/03/21 02:32:43 robbat2 Exp $";
 
 static int flag_debug = 0;
 static int flag_verbose = 0;
@@ -30,7 +30,7 @@ static struct option long_options[] = {
 static char* short_options = "vdhV"; // no short opt for version
 
 void process_file(char *filename) {
-#define __FUNCTION__ process_file
+#define __FUNCTION__ "process_file"
 	int fd;
 	struct stat buf;
 	
@@ -60,8 +60,10 @@ void process_file(char *filename) {
 	int readahead_errno = errno;
 	switch(readahead_errno) {
 		case 0: 
-			if(flag_debug || flag_verbose) 
+			if(flag_debug) 
 				fprintf(stderr,"%s:%s:%d:Loaded %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+			if(flag_verbose) 
+				fprintf(stdout,"Loaded file:%s\n",filename);
 			break;
 		case EBADF:
 			if(flag_debug)
@@ -80,7 +82,7 @@ void process_file(char *filename) {
 
 #define MAXPATH 2048
 void process_files(char* filename) {
-#define __FUNCTION__ process_files
+#define __FUNCTION__ "process_files"
 	int fd;
 	char* file = NULL;
 	struct stat statbuf;
@@ -117,6 +119,8 @@ void process_files(char* filename) {
 		}
 		return;
 	}
+	if(flag_verbose) 
+		fprintf(stdout,"Loaded list:%s\n",filename);
 
 	iter = file;
 	while (iter) {
@@ -146,19 +150,20 @@ void skel_command_msg_exit(FILE * f, char* msg, unsigned char retval) {
 	exit(retval);
 }
 
-void command_version() {
-#define LEN 1024
-	char s[LEN];
-	snprintf(s,LEN,"%s: %s\n",program_name,program_id);
-#undef LEN
-	skel_command_msg_exit(stdout,s,0);
-}
 void command_error() {
 #define LEN 1024
 	char s[LEN];
 	snprintf(s,LEN,"Try `%s --help' for more information.\n",program_name);
 #undef LEN
 	skel_command_msg_exit(stderr,s,1);
+}
+
+void command_version() {
+#define LEN 1024
+	char s[LEN];
+	snprintf(s,LEN,"%s: %s\n",program_name,program_id);
+#undef LEN
+	fprintf(stdout,s);
 }
 
 void command_help() {
@@ -175,11 +180,11 @@ void command_help() {
 			"  -V --version   As the name says.\n"\
 			,program_name);
 #undef LEN
-	skel_command_msg_exit(stdout,s,0);
+	fprintf(stdout,s);
 }
 
 int main(int argc, char **argv) {
-#define __FUNCTION__ main
+#define __FUNCTION__ "main"
 	int i;
 	program_name = argv[0];
 	while(1) {
@@ -188,18 +193,37 @@ int main(int argc, char **argv) {
 		c = getopt_long(argc,argv,short_options,long_options,&long_index);
 		if (c == -1)
 			break;
-		switch(long_index) {
-			// handled by getopt directly
-			case 0: // verbose
-			case 1: // debug
-			case 2: // version
-			case 3: // help
+		switch(c) {
+			// is this a long option?
+			case 0:
+			case '-': 
+				switch(long_index) {
+					// handled by getopt directly
+					case 0: // verbose
+					case 1: // debug
+					case 2: // version
+					case 3: // help
+						break;
+					default:
+						command_error();
+				}
 				break;
-			// something else
+			// nope, short option
+			case 'v':
+				flag_verbose = 1;
+				break;
+			case 'd':
+				flag_version = 1;
+				break;
+			case 'h':
+				flag_help = 1;
+				break;
+			case 'V':
+				flag_version = 1;
+				break;
 			default:
 				command_error();
 		}
-
 	}
 	if(flag_help) {
 		command_help();
@@ -207,6 +231,10 @@ int main(int argc, char **argv) {
 	if(flag_version) {
 		command_version();
 	}
+	if(flag_version || flag_help) {
+		exit(0);
+	}
+	// now do the work
 	for (i=optind; i<argc; i++) {
 		process_files(argv[i]);
 	}
