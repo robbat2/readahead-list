@@ -3,11 +3,11 @@ Welcome to readahead-list.
 readahead-list is free software. Please see the file COPYING for details.
 For documentation, please see the files in the doc subdirectory.
 For building and installation instructions please see the INSTALL file.
-# Copyright 2005 Robin H. Johnson <robbat2@gentoo.org>
+# Copyright 2005 Robin H. Johnson <robbat2@orbis-terrarum.net>
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /code/convert/cvsroot/infrastructure/readahead-list/README.in,v 1.1 2005/03/23 04:38:58 robbat2 Exp $
+# $Header: /code/convert/cvsroot/infrastructure/readahead-list/README.in,v 1.2 2005/03/23 06:04:08 robbat2 Exp $
 
-This implementation of a client for readhead was written by Robin H. Johnson <robbat2@gentoo.org>.
+This implementation of a client for readhead was written by Robin H. Johnson <robbat2@orbis-terrarum.net>.
 
 It is based on a version originally written by Erich Schubert <erich@debian.org>.
 Which was found at:
