@@ -1,18 +1,18 @@
 readahead-list -- History of visible changes.
 
-Copyright (C) 2005, Robin H. Johnson <robbat2@gentoo.org>
+Copyright (C) 2005, Robin H. Johnson <robbat2@orbis-terrarum.net>
 See the end for copying conditions.
 
-Please send readahead-list bug reports to robbat2@gentoo.org.
+Please send readahead-list bug reports to robbat2@orbis-terrarum.net.
 
-Version 0.1
+Version 0.20050322.2148
 
-* List your features here
+* First auto-tooled release. filelist-order added.
 
 -------------------------------------------------------
 Copying information:
 
-Copyright (C) 2005, Robin H. Johnson <robbat2@gentoo.org>
+Copyright (C) 2005, Robin H. Johnson <robbat2@orbis-terrarum.net>
 
    Permission is granted to anyone to make or distribute verbatim copies
    of this document as received, in any medium, provided that the
