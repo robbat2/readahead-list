@@ -1,7 +1,7 @@
 // Copyright 2005 Robin H. Johnson <robbat2@gentoo.org>
 // Distributed under the terms of the GNU General Public License v2
 // Based on code originally written by Erich Schubert <erich@debian.org>.
-// $Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.7 2005/03/22 07:27:59 robbat2 Exp $
+// $Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.8 2005/03/23 01:09:31 robbat2 Exp $
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,8 +17,8 @@
 #include <errno.h>
 
 static char* program_name = "readhead-list";
-static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.7 2005/03/22 07:27:59 robbat2 Exp $";
-static char* program_id = "$Id: readahead-list.c,v 1.7 2005/03/22 07:27:59 robbat2 Exp $";
+static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.8 2005/03/23 01:09:31 robbat2 Exp $";
+static char* program_id = "$Id: readahead-list.c,v 1.8 2005/03/23 01:09:31 robbat2 Exp $";
 
 static int flag_debug = 0;
 static int flag_verbose = 0;
@@ -101,7 +101,13 @@ void process_files(char* filename) {
 		fprintf(stderr,"%s:%s:%d:Attempting to load list: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
 	}
 
+	if(strcmp(filename,"-") == 0) {
+		fprintf(stderr,"Sorry, input via stdin is not supported. Skipping this argument.\n");
+		return;
+	}
+
 	fd = open(filename,O_RDONLY);
+
 	if (fd<0) {
 		if(flag_debug) {
 			fprintf(stderr,"%s:%s:%d:failed to open list: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
@@ -158,12 +164,16 @@ void skel_command_msg_exit(FILE * f, char* msg, unsigned char retval) {
 	exit(retval);
 }
 
+void error_exit(char* msg) {
+	skel_command_msg_exit(stderr,msg,1);
+}
+
 void command_error() {
 #define LEN 1024
 	char s[LEN];
 	snprintf(s,LEN,"Try `%s --help' for more information.\n",program_name);
 #undef LEN
-	skel_command_msg_exit(stderr,s,1);
+	error_exit(s);
 }
 
 void command_version() {
@@ -182,7 +192,7 @@ void command_help() {
 			"Loads lists from FILE and performs readahead(2) on each entry.\n"\
 			"\n"\
 			"Options:\n"\
-			"  -v --verbose   Print the name of each file that is successfully loaded.\n"\
+			"  -v --verbose   Print name of each successfully loaded file.\n"\
 			"  -d --debug     Print out status messages while processing.\n"\
 			"  -h --help      Stop looking at me!\n"\
 			"  -V --version   As the name says.\n"\
