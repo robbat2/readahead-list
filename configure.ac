@@ -9,12 +9,9 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 AC_PREREQ(2.59)
-AC_INIT([readahead-list],
-        [0.0.1],
-        [Robin H. Johnson robbat2@gentoo.org],
-        [readahead-list])
+AC_INIT([readahead-list],[0.0.1],[Robin H. Johnson robbat2@gentoo.org],[readahead-list])
 AC_CONFIG_AUX_DIR(config)
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([dist-bzip2])
 
 LF_CONFIGURE_CC
