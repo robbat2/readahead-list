@@ -1,7 +1,7 @@
 #!/sbin/runscript
 # Copyright 2005 Robin H. Johnson <robbat2@gentoo.org>
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /code/convert/cvsroot/infrastructure/readahead-list/init/gentoo/Attic/init.d-readahead-list,v 1.1 2005/03/21 06:35:18 robbat2 Exp $
+# $Header: /code/convert/cvsroot/infrastructure/readahead-list/init/gentoo/Attic/init.d-readahead-list,v 1.2 2005/03/21 07:05:19 robbat2 Exp $
 
 depend() {
 	before *
@@ -11,7 +11,7 @@ depend() {
 }
 
 start() {
-	var="READAHEAD_LIST_runlevel_${softlevel}"
+	var="READAHEAD_LIST_runlevel_${SOFTLEVEL}"
 	f="${!var}"
 	ebegin "Performing readahead(2) for contents of ${f}"
 	/sbin/readahead-list ${!runlevelfile}
