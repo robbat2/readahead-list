@@ -14,9 +14,9 @@
 #ifndef BUFFER_SIZE
 #define BUFFER_SIZE 4096
 #endif
-#define get_device(a) ((a).sb.st_dev)
-#define get_inode(a) ((a).sb.st_ino)
-#define get_firstblock(a) ((a).first_block)
+#define func_ST_DEV(a) ((a).sb.st_dev)
+#define func_ST_INO(a) ((a).sb.st_ino)
+#define get_IOCTL_FIBMAP(a) ((a).first_block)
 
 using namespace std;
 
@@ -26,6 +26,12 @@ struct mapkey {
 	struct stat sb;
 	int first_block;
 };
+
+enum OrderField_Type = { ST_DEV,ST_INO,ST_MODE,ST_NLINK,ST_UID,ST_GID,ST_RDEV,ST_SIZE,ST_BLKSIZE,ST_BLOCKS,ST_ATIME,ST_MTIME,ST_CTIME,IOCTL_FIBMAP };
+struct OrderField {
+	OrderField_Type type;
+	boolean reverse;
+}
 
 inline int numcmp(const int a, const int b) {
 	if(a > b) {
@@ -39,25 +45,45 @@ inline int numcmp(const int a, const int b) {
 
 
 // a < b
-inline int mapcmp(const mapkey *a, const mapkey *b) {
+int mapcmp(const mapkey *a, const mapkey *b, OrderField ofa[], int of_size) {
 #define CMP_NE_RET if(cmp != 0) { return cmp; }
+	// must check for null first
 	bool a_null = (a == NULL);
 	bool b_null = (b == NULL);
 	if(a_null) {
-		if(b_null) {
-			return 0;
-		} else {
-			return 1;
-		}
+		return (b_null ? 0 : 1);
 	} else if(b_null) {
 		return -1;
 	}
+	// now we can check for all others
 	int cmp;
-	cmp = numcmp(get_device(*a),get_device(*b));
-	CMP_NE_RET;
-	cmp = numcmp(get_firstblock(*a),get_firstblock(*b));
-	CMP_NE_RET;
-	cmp = numcmp(get_inode(*a),get_inode(*b));
+	ofa = {ST_DEV,IOCTL_FIBMAP,ST_INO};
+#define order_func(func,val) func_#func(val);
+#define order_func_both(func) order_func(func,val_a) order_func(func,val_b)
+#define case_entry(func) order_func_both(func); break;
+	for(int i = 0; i < of_size; i++) {
+		int val_a, val_b;
+		bool rev = false;
+		OrderField of = ofa[i];
+		switch(of.type) {
+			case ST_DEV: case_entry(ST_DEV);
+			case ST_INO: case_entry(ST_INO);
+			case ST_MODE: case_entry(ST_MODE);
+			case ST_NLINK: case_entry(ST_NLINK);
+			case ST_UID: case_entry(ST_UID);
+			case ST_GID: case_entry(ST_GID);
+			case ST_RDEV: case_entry(ST_RDEV);
+			case ST_SIZE: case_entry(ST_SIZE);
+			case ST_BLKSIZE: case_entry(ST_BLKSIZE);
+			case ST_BLOCKS: case_entry(ST_BLOCKS);
+			case ST_ATIME: case_entry(ST_ATIME);
+			case ST_MTIME: case_entry(ST_MTIME);
+			case ST_CTIME: case_entry(ST_CTIME);
+			case IOCTL_FIBMAP: case_entry(IOCTL_FIBMAP);
+		}
+		cmp = numcmp(a,b) * (of.reverse ? -1 : 1);
+		CMP_NE_RET;
+	}
 	return cmp;
 #undef CMP_NE_RET
 }
@@ -71,7 +97,7 @@ mapkey* build_mapkey(char *filename) {
 	mk->first_block = -2; 
 
 
-    fd = open(filename, O_RDONLY);
+	fd = open(filename, O_RDONLY);
 	if(fd >= 0) {
 		if( fstat( fd, &(mk->sb) ) == -1 || !S_ISREG((mk->sb).st_mode)) {
 			delete mk;
@@ -109,7 +135,7 @@ struct maplt {
 
 void printItems(PAIR_COMPLETE_TYPE p) {
 	if(flag_debug) {
-		cerr << get_device(*(p.first)) << "\t" << get_firstblock(*(p.first)) << "\t" << get_inode(*(p.first)) << "\t" << p.second << endl;
+		cerr << func_ST_DEV(*(p.first)) << "\t" << get_IOCTL_FIBMAP(*(p.first)) << "\t" << func_ST_INO(*(p.first)) << "\t" << p.second << endl;
 	} else {
 		cout << p.second << endl;
 	}
