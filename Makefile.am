@@ -8,5 +8,7 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-EXTRA_DIST = reconf configure
+EXTRA_DIST = reconf configure README
 SUBDIRS = m4 src doc contrib
+CONFIG_CLEAN_FILES = 
+

@@ -10,14 +10,31 @@
 
 AC_PREREQ(2.59)
 # version stamp is 0.YYYYMMDD.HHMM in UTC!
-AC_INIT([readahead-list],[0.20050323.0658],[Robin H. Johnson robbat2@orbis-terrarum.net],[readahead-list])
+AC_INIT([readahead-list],[0.20050327.2203],[Robin H. Johnson robbat2@orbis-terrarum.net],[readahead-list])
+
+LFS_CPPFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE"
+WARN_CFLAGS="-Wall -W"
+CFLAGS="$CFLAGS $WARN_CFLAGS"
+CXXFLAGS="$CXXFLAGS $WARN_CFLAGS"
+CPPFLAGS="$CPPFLAGS $LFS_CPPFLAGS"
+export CFLAGS CXXFLAGS CPPFLAGS
+
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([dist-bzip2])
 
+
 # Checks for programs.
-AC_PROG_CXX
+AC_PROG_AWK
 AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PATH_PROG(MV, mv, mv)
+AC_PATH_PROG(RM, rm, rm)
+AC_PATH_PROG(CP, cp, cp)
+AC_PATH_PROG(SED, sed, sed)
+AC_PATH_PROG(CMP, cmp, cmp)
 
 AC_CANONICAL_HOST
 LF_SET_WARNINGS
