@@ -9,9 +9,11 @@
 #include <fcntl.h>
 #include <sched.h>
 #include <string.h>
+#include <errno.h>
 
 static char* program_name = "readhead-list";
-static char* program_version = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.1 2005/03/20 03:32:10 robbat2 Exp $";
+static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.2 2005/03/20 04:29:21 robbat2 Exp $";
+static char* program_id = "$Id: readahead-list.c,v 1.2 2005/03/20 04:29:21 robbat2 Exp $";
 
 static int flag_debug = 0;
 static int flag_verbose = 0;
@@ -25,30 +27,60 @@ static struct option long_options[] = {
 	{"help", 0, &flag_help, 1},
 	{0, 0, 0, 0}
 };
-static char* short_options = "vd"; // no short opt for version
+static char* short_options = "vdhV"; // no short opt for version
 
 void process_file(char *filename) {
+#define __FUNCTION__ process_file
 	int fd;
 	struct stat buf;
 	
 	if (!filename)
 		return;
+	
+	if(flag_debug) {
+		fprintf(stderr,"%s:%s:%d:Attempting to readhead file: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+	}
 		
 	fd = open(filename,O_RDONLY);
-	if (fd<0)
+	if (fd<0) {
+		if(flag_debug) {
+			fprintf(stderr,"%s:%s:%d:failed to open file: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+		}
 		return;
+	}
 	
-	if (fstat(fd, &buf)<0)	 
+	if (fstat(fd, &buf)<0) {
+		if(flag_debug) {
+			fprintf(stderr,"%s:%s:%d:failed to fstat file: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+		}
 		return;
+	}
 	
 	readahead(fd, (loff_t)0, (size_t)buf.st_size);
+	int readahead_errno = errno;
+	switch(readahead_errno) {
+		case 0: 
+			if(flag_debug || flag_verbose) 
+				fprintf(stderr,"%s:%s:%d:Loaded %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+			break;
+		case EBADF:
+			if(flag_debug)
+				fprintf(stderr,"%s:%s:%d:Bad file: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+		case EINVAL:
+			if(flag_debug)
+				fprintf(stderr,"%s:%s:%d:Invalid filetype for readhead: %s\n"__FILE__,__FUNCTION__,__LINE__,filename);
+			break;
+	}
+
 	close(fd);
 	/* be nice to other processes now */
 	sched_yield();
+#undef __FUNCTION__
 }
 
-#define MAXPATH 1024
+#define MAXPATH 2048
 void process_files(char* filename) {
+#define __FUNCTION__ process_files
 	int fd;
 	char* file = NULL;
 	struct stat statbuf;
@@ -57,26 +89,47 @@ void process_files(char* filename) {
 
 	if (!filename)
 		return;
+	
+	if(flag_debug) {
+		fprintf(stderr,"%s:%s:%d:Attempting to load list: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+	}
 
 	fd = open(filename,O_RDONLY);
-	if (fd<0)
+	if (fd<0) {
+		if(flag_debug) {
+			fprintf(stderr,"%s:%s:%d:failed to open list: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+		}
 		return;
+	}
 	
-	if (fstat(fd, &statbuf)<0)	 
+	if (fstat(fd, &statbuf)<0) {
+		if(flag_debug) {
+			fprintf(stderr,"%s:%s:%d:failed to fstat list: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+		}
 		return;
+	}
 
 	/* map the whole file */
 	file = mmap(0, statbuf.st_size, PROT_READ, MAP_SHARED, fd, 0);
-	if (!file || file == MAP_FAILED)
+	if (!file || file == MAP_FAILED) {
+		if(flag_debug) {
+			fprintf(stderr,"%s:%s:%d:failed to mmap list: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+		}
 		return;
+	}
 
 	iter = file;
 	while (iter) {
 		/* find next newline */
 		char* next = memchr(iter,'\n',file + statbuf.st_size - iter);
 		if (next) {
-			if (next - iter < MAXPATH && (next-iter > 1)) {
+			// if the length is positive, and shorter than MAXPATH
+			// then we process it
+			if((next - iter) >= MAXPATH) {
+				fprintf(stderr,"%s:%s:%d:item in list too long!\n",__FILE__,__FUNCTION__,__LINE__);
+			} else if (next-iter > 1) {
 				memcpy(buffer, iter, next-iter);
+				// replace newline with string terminator
 				buffer[next-iter]='\0';
 				process_file(buffer);
 			}
@@ -85,6 +138,7 @@ void process_files(char* filename) {
 			iter = NULL;
 		}
 	}
+#undef __FUNCTION__
 }
 
 void skel_command_msg_exit(FILE * f, char* msg, unsigned char retval) {
@@ -95,32 +149,43 @@ void skel_command_msg_exit(FILE * f, char* msg, unsigned char retval) {
 void command_version() {
 #define LEN 1024
 	char s[LEN];
-	snprintf(s,LEN,"%s: %s\n",program_name,program_version);
+	snprintf(s,LEN,"%s: %s\n",program_name,program_id);
 #undef LEN
 	skel_command_msg_exit(stdout,s,0);
 }
 void command_error() {
 #define LEN 1024
 	char s[LEN];
-	snprintf(s,LEN,"Try `%s --help' for more information.\n",argv[0]);
+	snprintf(s,LEN,"Try `%s --help' for more information.\n",program_name);
 #undef LEN
 	skel_command_msg_exit(stderr,s,1);
 }
 
+void command_help() {
+#define LEN 8192
+	char s[LEN];
+	snprintf(s,LEN,
+			"Usage: %s [OPTION]... [FILE]...\n"\
+			"Loads lists from FILE and performs readahead(2) on each entry.\n"\
+			"\n"\
+			"Options:\n"\
+			"  -v --verbose   Print the name of each file that is successfully loaded.\n"\
+			"  -d --debug     Print out status messages while processing.\n"\
+			"  -h --help      Stop looking at me!\n"\
+			"  -V --version   As the name says.\n"\
+			,program_name);
+#undef LEN
+	skel_command_msg_exit(stdout,s,0);
+}
+
 int main(int argc, char **argv) {
+#define __FUNCTION__ main
 	int i;
-	printf("---BEFORE\n");
-	for (i=1; i<argc; i++) {
-		//process_files(argv[i]);
-		printf("argv[%d]: '%s'\n",i,argv[i]);
-	}
-	printf("---DURING\n");
+	program_name = argv[0];
 	while(1) {
 		int long_index,c;
 		long_index = -1;
 		c = getopt_long(argc,argv,short_options,long_options,&long_index);
-		//printf("optind: %d opterr: %d optopt: %d long_index: %d optarg: %s\n",optind,opterr,optopt,long_index,optarg);
-		// done
 		if (c == -1)
 			break;
 		switch(long_index) {
@@ -128,7 +193,7 @@ int main(int argc, char **argv) {
 			case 0: // verbose
 			case 1: // debug
 			case 2: // version
-			case 3: // version
+			case 3: // help
 				break;
 			// something else
 			default:
@@ -136,19 +201,14 @@ int main(int argc, char **argv) {
 		}
 
 	}
-	printf("---AFTER-processed\n");
-	//if(flag_version) {
-	//	command_version();
-	//}
-	printf("debug: %d\n",flag_debug);
-	printf("verbose: %d\n",flag_verbose);
-	printf("version: %d\n",flag_version);
-	printf("help: %d\n",flag_help);
-	printf("optind: %d opterr: %d optopt: %d optarg: %s\n",optind,opterr,optopt,optarg);
-	printf("---AFTER-raw\n");
+	if(flag_help) {
+		command_help();
+	}
+	if(flag_version) {
+		command_version();
+	}
 	for (i=optind; i<argc; i++) {
-		//process_files(argv[i]);
-		printf("argv[%d]: '%s'\n",i,argv[i]);
+		process_files(argv[i]);
 	}
 	return 0;
 }
