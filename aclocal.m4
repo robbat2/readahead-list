@@ -124,8 +124,8 @@ AC_DEFUN(LF_SET_WARNINGS,[
   AC_MSG_RESULT($lf_warnings)
   
   dnl Warnings for the two main compilers
-  cc_warning_flags="-Wall -Wextra -W"
-  cxx_warning_flags="-Wall -Wextra -W -Woverloaded-virtual -Wtemplate-debugging"
+  cc_warning_flags="-Wall"
+  cxx_warning_flags="-Wall -Woverloaded-virtual -Wtemplate-debugging"
   if test $lf_warnings = yes
   then
     if test -n "${CC}"
