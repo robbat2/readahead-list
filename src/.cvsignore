@@ -3,4 +3,4 @@ Makefile.in
 Makefile
 filelist-order
 readahead-list
-.dep
+.deps

@@ -35,8 +35,8 @@ int __STACK_DEBUG__ = 0;
 using namespace std;
 
 static char* program_name = "readhead-list";
-static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/filelist-order.cxx,v 1.2 2005/03/23 01:09:31 robbat2 Exp $";
-static char* program_id = "$Id: filelist-order.cxx,v 1.2 2005/03/23 01:09:31 robbat2 Exp $";
+static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/src/filelist-order.cxx,v 1.1 2005/03/23 04:38:19 robbat2 Exp $";
+static char* program_id = "$Id: filelist-order.cxx,v 1.1 2005/03/23 04:38:19 robbat2 Exp $";
 
 static int flag_input_file = 0;
 static int flag_input_stdin = 0;

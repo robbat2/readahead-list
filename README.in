@@ -1,0 +1,43 @@
+Welcome to readahead-list.
+
+readahead-list is free software. Please see the file COPYING for details.
+For documentation, please see the files in the doc subdirectory.
+For building and installation instructions please see the INSTALL file.
+# Copyright 2005 Robin H. Johnson <robbat2@gentoo.org>
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /code/convert/cvsroot/infrastructure/readahead-list/README.in,v 1.1 2005/03/23 04:38:58 robbat2 Exp $
+
+This implementation of a client for readhead was written by Robin H. Johnson <robbat2@gentoo.org>.
+
+It is based on a version originally written by Erich Schubert <erich@debian.org>.
+Which was found at:
+http://blog.drinsama.de/erich/en/linux/2004121101-readahead.html 
+(link to http://people.debian.org/~erich/readahead-list.c).
+
+As Erich is a Debian developer, and his original source lacks any license, I've
+specifically chosen GPL-2 as the license, as the code is based off the kernel
+readahead.
+
+This has mainly been developed in response to Gentoo Bug #64724
+http://bugs.gentoo.org/show_bug.cgi?id=64724
+
+The application very specifically does NOT output any errors unless you have
+--debug on. This is in case a file isn't on your system between boots.
+
+Syntax:
+readahead-list [OPTIONS] FILE [FILE...]
+
+Where each FILE contains a list of items to perform readahead(2) on, one per
+line.
+
+OPTIONS:
+
+--verbose
+	Print the name of each file that is actually loaded.
+--debug
+	As the name says.
+--version
+	Should be obvious.
+--help
+	Stop looking at me!
+

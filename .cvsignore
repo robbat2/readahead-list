@@ -1,6 +1,9 @@
-*.o
-*.s
-*.i
-*.ii
-readahead-list
-filelist-order
+Makefile.in
+configure
+configure.in
+README
+autom4te.cache
+Makefile
+stamp-h1
+config.log
+config.status
