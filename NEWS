@@ -5,6 +5,10 @@ See the end for copying conditions.
 
 Please send readahead-list bug reports to robbat2@orbis-terrarum.net.
 
+Version 0.20050328.0142
+
+* Add manpages. Build filelist-order with large file support. Code cleanup.
+
 Version 0.20050322.2148
 
 * First auto-tooled release. filelist-order added.
