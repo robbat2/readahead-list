@@ -42,6 +42,10 @@ AC_CONFIG_FILES([
    m4/Makefile
    src/Makefile
    contrib/Makefile
+   contrib/data/Makefile
+   contrib/init/Makefile
+   contrib/init/gentoo/Makefile
+   contrib/scripts/Makefile
 ])
 
 # Checks for library functions.
