@@ -13,7 +13,6 @@ sbin_PROGRAMS = readahead-list
 filelist_order_SOURCES = filelist-order.cxx
 readahead_list_SOURCES = readahead-list.c
 
-AM_CFLAGS = -Wall -W -Wextra
-AM_CFLAGS += -ggdb3
+#AM_CFLAGS = -ggdb3
 AM_CXXFLAGS = $(CFLAGS)
 DEFAULT_INCLUDES = -I/usr/src/linux/include
