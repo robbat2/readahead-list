@@ -3,6 +3,7 @@
 #include <vector>
 
 #include <string.h>
+#include <getopt.h>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -13,32 +14,40 @@
 #include <linux/fs.h>
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 4096
+#define BUFFER_SIZE 2048
 #endif
 
 #define _DEBUG_MSG(fmt,msg...) { fprintf(stderr,fmt, ##msg); fflush(stderr); };
 #define WARNING(fmt,msg...) _DEBUG_MSG(fmt,##msg);
-#ifdef MESSY_DEBUGGING
-int __STACK__ = 0;
+int __STACK_DEBUG__ = 0;
 bool __DEBUG__ = false;
-#define DEBUG(fmt,msg...) { if(__DEBUG__) { _DEBUG_MSG("%d:%s:%d:",__STACK__,__FILE__,__LINE__); _DEBUG_MSG(fmt, ##msg ); } }
-#define DEBUG_STACK_UP { __STACK__++; }
-#define DEBUG_STACK_DOWN { __STACK__--; }
+#define DEBUG(fmt,msg...) { if(__DEBUG__ && flag_debug) { _DEBUG_MSG("%d:%s:%d:",__STACK_DEBUG__,__FILE__,__LINE__); _DEBUG_MSG(fmt, ##msg ); } }
+#define DEBUG_STACK_UP { if(__DEBUG__ && flag_debug) { __STACK_DEBUG__++; } }
+#define DEBUG_STACK_DOWN { if(__DEBUG__ && flag_debug) { __STACK_DEBUG__--; } }
 #define DEBUG_ON { __DEBUG__ = true; }
 #define DEBUG_OFF { __DEBUG__ = false; }
-#else
-#define DEBUG_ON
-#define DEBUG_OFF
-#define DEBUG_STACK_DOWN
-#define DEBUG_STACK_UP
-#define DEBUG(fmt,msg...)
-#endif // MESSY_DEBUGGING
 
 using namespace std;
 
+static char* program_name = "readhead-list";
+static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/file-order-block.cxx,v 1.5 2005/03/22 07:27:59 robbat2 Exp $";
+static char* program_id = "$Id: file-order-block.cxx,v 1.5 2005/03/22 07:27:59 robbat2 Exp $";
 
-bool flag_debug = true;
-bool flag_verbose = true;
+static int flag_debug = 0;
+static int flag_verbose = 0;
+static int flag_version = 0;
+static int flag_help = 0;
+static int flag_fields = 0;
+static char* param_fields = NULL;
+static struct option long_options[] = {
+	{"verbose", 0, &flag_verbose, 1},
+	{"debug", 0, &flag_debug, 1},
+	{"version", 0, &flag_version, 1},
+	{"help", 0, &flag_help, 1},
+	{"fields", 1, &flag_fields, 1},
+	{0, 0, 0, 0}
+};
+static char* short_options = "fvdhV";
 
 struct mapkey {
 	struct stat *sb;
@@ -149,7 +158,6 @@ int mapcmp(const mapkey *a, const mapkey *b, vector<OrderField*> *ofa) {
 				case FILENAME: case_entry(FILENAME);
 			}
 #undef case_entry
-			DEBUG("%s:(%d,%d)\n","mapcmp-inside-loop#cmp",val_a,val_b);
 			cmp = cmp * (of.reverse ? 1 : -1);
 			CMP_NE_RET;
 		}
@@ -265,45 +273,14 @@ void printItem(PAIR_COMPLETE_TYPE p,vector <OrderField*> *ofa) {
 	DEBUG_STACK_DOWN;
 }
 
-#define dumpMyOrder() { \
-		DEBUG_ON; \
-		int i; \
-		i = 0; \
-		for (vector<OrderField*>::iterator it = myOrder->begin(); it != myOrder->end(); ++it) { \
-			DEBUG("main-check-myOrder#1:(%d,%x)\n",i,*it); \
-			i++; \
-		} \
-		DEBUG_OFF; \
-}
-
-int main(int argc, char** argv) {
-	DEBUG_STACK_UP;
-	if(getuid() != 0) {
-		WARNING("ioctl(FIBMAP) is limited to root only! Results may be less than optimal.\n");
-	}
-
-	myOrder = new vector<OrderField*>;
-
-	myOrder->push_back(new OrderField(ST_DEV,false));
-	myOrder->push_back(new OrderField(IOCTL_FIBMAP,false));
-	myOrder->push_back(new OrderField(FILENAME,false));
-	myOrder->push_back(new OrderField(ST_INO,false));
-
-	//dumpMyOrder();
-
-	MULTIMAP_COMPLETE_TYPE  m;
-	// note that reiserfs doesn't implement FIBMAP!
+void process_input(MULTIMAP_COMPLETE_TYPE &m) {
 	char buffer[BUFFER_SIZE];
-
 	while(cin.good()) {
-		//dumpMyOrder();
 		cin.getline(buffer,BUFFER_SIZE);
 		int filename_len = cin.gcount()-1; //faster than strlen
 		if(filename_len > 0) {
 			char* filename = new char[filename_len+1];
-			dumpMyOrder(); // it's valid here
 			strncpy(filename,buffer,filename_len+1);
-			dumpMyOrder(); // but not here
 			DEBUG_ON;
 			DEBUG("%s:(%s)\n","main-got-filename",filename);
 			DEBUG_OFF;
@@ -319,14 +296,132 @@ int main(int argc, char** argv) {
 			}
 		}
 	}
+}
 
-	//dumpMyOrder();
-	//return -1; 
-
-	DEBUG("Results:\n");
+void process_output(MULTIMAP_COMPLETE_TYPE &m) {
 	for (MULTIMAP_COMPLETE_TYPE::iterator it = m.begin(); it != m.end(); ++it) {
 		printItem(*it,myOrder);
 	}
+}
+
+void skel_command_msg_exit(FILE * f, char* msg, unsigned char retval) {
+	fprintf(f,msg);
+	exit(retval);
+}
+
+void command_error() {
+#define LEN 1024
+	char s[LEN];
+	snprintf(s,LEN,"Try `%s --help' for more information.\n",program_name);
+#undef LEN
+	skel_command_msg_exit(stderr,s,1);
+}
+
+void command_version() {
+#define LEN 1024
+	char s[LEN];
+	snprintf(s,LEN,"%s: %s\n",program_name,program_id);
+#undef LEN
+	fprintf(stdout,s);
+}
+
+void command_help() {
+#define LEN 8192
+	char s[LEN];
+	snprintf(s,LEN,
+			"Usage: %s [OPTION]... [FILE]...\n"\
+			"Loads lists from FILE and performs readahead(2) on each entry.\n"\
+			"\n"\
+			"Options:\n"\
+			"  -v --verbose   Print the name of each file that is successfully loaded.\n"\
+			"  -d --debug     Print out status messages while processing.\n"\
+			"  -h --help      Stop looking at me!\n"\
+			"  -V --version   As the name says.\n"\
+			,program_name);
+#undef LEN
+	fprintf(stdout,s);
+}
+
+void process_opts(int argc, char** argv) {
+	myOrder = new vector<OrderField*>;
+	program_name = argv[0];
+	while(1) {
+		int long_index,c;
+		long_index = -1;
+		c = getopt_long(argc,argv,short_options,long_options,&long_index);
+		if (c == -1)
+			break;
+		switch(c) {
+			// is this a long option?
+			case 0:
+			case '-': 
+				switch(long_index) {
+					// handled by getopt directly
+					case 0: // verbose
+					case 1: // debug
+					case 2: // version
+					case 3: // help
+						break;
+					case 4: // fields
+						strcpy(param_fields,optarg);
+						break;
+					default:
+						command_error();
+				}
+				break;
+			// nope, short option
+			case 'v':
+				flag_verbose = 1;
+				break;
+			case 'd':
+				flag_version = 1;
+				break;
+			case 'h':
+				flag_help = 1;
+				break;
+			case 'V':
+				flag_version = 1;
+				break;
+			case 'f':
+				flag_fields = 1;
+				strcpy(param_fields,optarg);
+				break;
+			default:
+				command_error();
+		}
+	}
+	if(flag_help) {
+		command_help();
+	}
+	if(flag_version) {
+		command_version();
+	}
+	if(flag_version || flag_help) {
+		exit(0);
+	}
+	if(flag_fields) {
+		// TODO: parse param_fields
+		WARNING("TODO: parse param_fields\n");
+		exit(-2);
+	} else {
+		// default fields
+		myOrder->push_back(new OrderField(ST_DEV,false));
+		myOrder->push_back(new OrderField(IOCTL_FIBMAP,false));
+		myOrder->push_back(new OrderField(ST_INO,false));
+		myOrder->push_back(new OrderField(FILENAME,false));
+	}
+}
+
+
+int main(int argc, char** argv) {
+	DEBUG_STACK_UP;
+	if(getuid() != 0) {
+		WARNING("ioctl(FIBMAP) is limited to root only! Results may be less than optimal.\n");
+	}
+	MULTIMAP_COMPLETE_TYPE  m;
+	process_opts(argc,argv);
+	process_input(m);
+	process_output(m);
 	DEBUG_STACK_DOWN;
 }
 

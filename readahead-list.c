@@ -1,7 +1,7 @@
 // Copyright 2005 Robin H. Johnson <robbat2@gentoo.org>
 // Distributed under the terms of the GNU General Public License v2
 // Based on code originally written by Erich Schubert <erich@debian.org>.
-// $Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.6 2005/03/22 07:14:08 robbat2 Exp $
+// $Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.7 2005/03/22 07:27:59 robbat2 Exp $
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,8 +17,8 @@
 #include <errno.h>
 
 static char* program_name = "readhead-list";
-static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.6 2005/03/22 07:14:08 robbat2 Exp $";
-static char* program_id = "$Id: readahead-list.c,v 1.6 2005/03/22 07:14:08 robbat2 Exp $";
+static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/Attic/readahead-list.c,v 1.7 2005/03/22 07:27:59 robbat2 Exp $";
+static char* program_id = "$Id: readahead-list.c,v 1.7 2005/03/22 07:27:59 robbat2 Exp $";
 
 static int flag_debug = 0;
 static int flag_verbose = 0;
@@ -32,7 +32,7 @@ static struct option long_options[] = {
 	{"help", 0, &flag_help, 1},
 	{0, 0, 0, 0}
 };
-static char* short_options = "vdhV"; // no short opt for version
+static char* short_options = "vdhV";
 
 void process_file(char *filename) {
 #define __FUNCTION__ "process_file"
