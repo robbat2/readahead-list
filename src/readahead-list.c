@@ -17,7 +17,7 @@
 */
 
 // Based on code originally written by Erich Schubert <erich@debian.org>.
-// $Header: /code/convert/cvsroot/infrastructure/readahead-list/src/readahead-list.c,v 1.2 2005/03/23 05:58:13 robbat2 Exp $
+// $Header: /code/convert/cvsroot/infrastructure/readahead-list/src/readahead-list.c,v 1.3 2005/03/28 09:36:56 robbat2 Exp $
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,10 +31,11 @@
 #include <sched.h>
 #include <string.h>
 #include <errno.h>
+#include <../config.h>
 
 static char* program_name = "readhead-list";
-static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/src/readahead-list.c,v 1.2 2005/03/23 05:58:13 robbat2 Exp $";
-static char* program_id = "$Id: readahead-list.c,v 1.2 2005/03/23 05:58:13 robbat2 Exp $";
+static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/src/readahead-list.c,v 1.3 2005/03/28 09:36:56 robbat2 Exp $";
+static char* program_id = "$Id: readahead-list.c,v 1.3 2005/03/28 09:36:56 robbat2 Exp $";
 
 static int flag_debug = 0;
 static int flag_verbose = 0;
@@ -195,7 +196,7 @@ void command_error() {
 void command_version() {
 #define LEN 1024
 	char s[LEN];
-	snprintf(s,LEN,"%s: %s\n",program_name,program_id);
+	snprintf(s,LEN,"%s: %s\n",program_name,PACKAGE_VERSION);
 #undef LEN
 	fprintf(stdout,s);
 }
