@@ -4,32 +4,31 @@ GREP=/bin/grep
 
 # Call me nuts, I just wrote set functions in shell!
 # -Robin H. Johnson <robbat2@gentoo.org>
+set_helper_comm() {
+	opt="$1"
+	a="$2"
+	b="$3"
+	tmpbase="$(mktemp)"
+	tmp_a=${tmpbase}.a
+	tmp_b=${tmpbase}.b
+	echo "$a" | xargs -n1 | sort | uniq >$tmp_a
+	echo "$b" | xargs -n1 | sort | uniq >$tmp_b
+	#echo "comm ${opt} ${tmp_a} ${tmp_b} | xargs" 1>&2
+	t="$(comm ${opt} ${tmp_a} ${tmp_b} | xargs)"
+	rm -f ${tmpbase}*
+	echo $t
+}
+
 set_union() {
 	a="$1"
 	b="$2"
-	t="$a"
-	for i in $b; do
-		echo "${a}" | ${GREP} -Fwqs "${i}"
-		# if not there, add
-		[ "$?" -ne 0 ] && t="${t} ${i}"
-	done
-	echo "$t"
+	set_helper_comm '' "$a" "$b"
 }
 
 set_intersection() {
 	a="$1"
 	b="$2"
-	t=''
-	if [ -z "$a" -o -z "$b" ]; then
-		t=''
-	else
-		for i in $a; do
-			echo "${b}" | ${GREP} -Fwqs "${i}"
-			# if there, add
-			[ "$?" -eq 0 ] && t="${t} ${i}"
-		done
-	fi
-	echo "$t"
+	set_helper_comm '-12' "$a" "$b"
 }
 set_complement() {
 	a="$1"
@@ -42,11 +41,18 @@ set_complement() {
 		t=''
 	# base case
 	else
-		for i in $a; do
-			echo "${b}" | ${GREP} -Fwqs "${i}"
-			# if not there, add
-			[ "$?" -ne 0 ] && t="${t} ${i}"
-		done
+		t="$(set_helper_comm '-13' "$a" "$b")"
 	fi
 	echo "$t"
+}
+
+set_test() {
+	a="a b c d e"
+	b="d e f g h"
+	union="$(set_union "$a" "$b")"
+	intersection="$(set_intersection "$a" "$b")"
+	complement="$(set_complement "$a" "$b")"
+	echo "Union: ${union}"
+	echo "Intersection: ${intersection}"
+	echo "Complement: ${complement}"
 }

@@ -3,11 +3,16 @@ source set-math.sh
 
 EXCLUDE_REGEX='^/(sys|dev|proc|var/run|var/log)|\.keep$|,v$'
 
+if [ `id -u` -eq 0 ]; then
+	echo "Using TMPDIR=/dev/shm/ for speed." 1>&2
+	TMPDIR=/dev/shm/
+fi
+
 listbin_script() {
 	base="$(echo $1 | sed -n -e '1s,^#!, ,gp' | awk '{print $1}')"
 	#echo listbin_script $* $base 1>&2
 	#list="$( cat $1 | perl -e 's/#(.*)//g' | perl -p -e "s/'(.*?)'//gs;s/\"(.*?)\"//gs" | tr -s '">&()=*{}$' ' ' | xargs -n1  |egrep -v "${EXCLUDE_REGEX}" | sort | uniq)"
-	list="${base} $( cat $1 | perl -p -e 's/#(.*)//g' | tr -s "\n'" ' ' |  tr -s '">&()=*{}$' ' ' | xargs -n1  |egrep -v "${EXCLUDE_REGEX}" | sort | uniq)"
+	list="${base} $1 $( cat $1 | perl -p -e 's/#(.*)//g' | tr -s "\n'" ' ' |  tr -s '">&()=*{}$' ' ' | xargs -n1  |egrep -v "${EXCLUDE_REGEX}" | sort | uniq)"
 	#echo "LIST: $list" 1>&2
 	for li in ${list}; do
 		n="$(listbin_valid "$li")"
@@ -25,10 +30,12 @@ listbin_single() {
 		list="$f"
 		# is this a script of some sort
 		if [ "$(head -n1 $f 2>/dev/null| cut -c1-2)" == "#!" ]; then
+			echo "SCRIPT: $f" 1>&2
 			list="$list $(listbin_script $f)"
 		else
 		# nope, not a script, ldd time
 		# this ensures we get the libraries we need
+			echo "NORMAL: $f" 1>&2
 			list="$list $(ldd "$f" 2>/dev/null | egrep -v linux-gate.so.1 | xargs -n1 | grep '^/')"
 		fi
 	fi
@@ -50,6 +57,7 @@ listbin_valid() {
 			a=$f
 		fi
 	fi
+	#[ $valid -eq 1 ] && echo "VALID: $a" 1>&2
 	[ $valid -eq 1 ] && echo $a
 }
 
@@ -67,8 +75,9 @@ listbin_recursive_worker() {
 	curr="${1}"
 	me="${2}"
 	# base case, check for self valid and self not in list
+	#[ -n "$(listbin_valid "${me}")" ] && echo "set intersection($curr)($me):'$(set_intersection "${curr}" "${me}")'" 1>&2
 	if [ -n "$(listbin_valid "${me}")" -a -z "$(set_intersection "${curr}" "${me}" )" ]; then
-		echo "DOING: ${me}" 1>&2
+		#echo "DOING: ${me}" 1>&2
 		# otherwise we do recursion
 		# add self to list to avoid recursion
 		curr="${curr} $me"
@@ -76,7 +85,7 @@ listbin_recursive_worker() {
 		new="$(listbin $me)"
 		# get new items only
 		#new="$(set_complement "${curr}" "${new}")"
-		new="$(set_complement "${new}" "${curr}")"
+		new="$(set_complement "${curr}" "${new}")"
 		# recurse into new items
 		for i in $new; do
 			#echo "DOING: $i" 1>&2
@@ -88,7 +97,7 @@ listbin_recursive_worker() {
 	echo "${curr}"
 }
 listbin_recursive() {
-	echo listbin_recursive $* 1>&2
+	#echo listbin_recursive $* 1>&2
 	curr=""
 	for i in $*; do
 		curr="$(listbin_recursive_worker "$curr" $i)"

@@ -6,5 +6,14 @@ WITHOUT executing the script or binary.
 
 The set handling stuff is a major bottleneck, causing exponential slowdown :-(.
 
+You should probably run these as root, or at least with all of your sbin
+directories in your path.
+
 For better logging, we need to look at either Linux accounting, or some form of
 auditing system.
+
+Sample usage:
+./build-file-list.sh /sbin/rc > readahead._sbin_rc.list #(~15 seconds)
+./grab-runlevel-execs.sh boot > readahead.runlevel-boot.list #(~80 seconds)
+./grab-runlevel-execs.sh default > readahead.runlevel-default.list #(~4 minutes)
+
