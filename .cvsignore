@@ -1,2 +1,6 @@
 *.o
+*.s
+*.i
+*.ii
 readahead-list
+filelist-order
