@@ -1,7 +1,7 @@
 #!/sbin/runscript
 # Copyright 2005 Robin H. Johnson <robbat2@orbis-terrarum.net>
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /code/convert/cvsroot/infrastructure/readahead-list/contrib/init/gentoo/conf.d-readahead-list,v 1.2 2005/03/23 06:03:46 robbat2 Exp $
+# $Header: /code/convert/cvsroot/infrastructure/readahead-list/contrib/init/gentoo/conf.d-readahead-list,v 1.3 2005/04/25 21:39:42 robbat2 Exp $
 
 # this list is intended for usage very early
 READAHEAD_LIST_exec_sbin_rc="/etc/readahead-list/exec_sbin_rc"
@@ -9,5 +9,8 @@ READAHEAD_LIST_exec_sbin_rc="/etc/readahead-list/exec_sbin_rc"
 # per-runlevel
 READAHEAD_LIST_runlevel_boot="/etc/readahead-list/runlevel-boot"
 READAHEAD_LIST_runlevel_default="/etc/readahead-list/runlevel-default"
+
+READAHEAD_LIST_call_early="${!READAHEAD_LIST_exec_sbin_rc} ${!READAHEAD_LIST_runlevel_boot}"
+READAHEAD_LIST_call_main="${!READAHEAD_LIST_runlevel_default}"
 
 # vim: ts=4 sw=4
