@@ -1,23 +1,23 @@
 /*
-** Copyright (C) 2005 Robin Hugh Johnson <robbat2@orbis-terrarum.net>
-**  
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version.
-** 
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-** 
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software 
-** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ * Copyright (C) 2005 Robin Hugh Johnson <robbat2@orbis-terrarum.net>
+ *  
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software 
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 // Based on code originally written by Erich Schubert <erich@debian.org>.
-// $Header: /code/convert/cvsroot/infrastructure/readahead-list/src/readahead-list.c,v 1.3 2005/03/28 09:36:56 robbat2 Exp $
+// $Header: /code/convert/cvsroot/infrastructure/readahead-list/src/readahead-list.c,v 1.4 2005/04/25 21:46:51 robbat2 Exp $
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,10 +33,11 @@
 #include <errno.h>
 #include <../config.h>
 
-static char* program_name = "readhead-list";
-static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/src/readahead-list.c,v 1.3 2005/03/28 09:36:56 robbat2 Exp $";
-static char* program_id = "$Id: readahead-list.c,v 1.3 2005/03/28 09:36:56 robbat2 Exp $";
+static char* program_name = "readahead-list";
+static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/src/readahead-list.c,v 1.4 2005/04/25 21:46:51 robbat2 Exp $";
+static char* program_id = "$Id: readahead-list.c,v 1.4 2005/04/25 21:46:51 robbat2 Exp $";
 
+// flag options
 static int flag_debug = 0;
 static int flag_verbose = 0;
 static int flag_version = 0;
@@ -206,7 +207,7 @@ void command_help() {
 	char s[LEN];
 	snprintf(s,LEN,
 			"Usage: %s [OPTION]... [FILE]...\n"\
-			"Loads lists from FILE and performs readahead(2) on each entry.\n"\
+			"Performs readahead(2) on each entry in a file-based list.\n"\
 			"\n"\
 			"Options:\n"\
 			"  -v --verbose   Print name of each successfully loaded file.\n"\
