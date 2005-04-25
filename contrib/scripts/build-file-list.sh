@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 2005 Robin H. Johnson <robbat2@orbis-terrarum.net>
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /code/convert/cvsroot/infrastructure/readahead-list/contrib/scripts/build-file-list.sh,v 1.2 2005/03/23 06:03:46 robbat2 Exp $
+# $Header: /code/convert/cvsroot/infrastructure/readahead-list/contrib/scripts/build-file-list.sh,v 1.3 2005/04/25 21:43:31 robbat2 Exp $
 source set-math.sh
 
 EXCLUDE_REGEX='^/(sys|dev|proc|var/run|var/log)|\.keep$|,v$'
@@ -68,9 +68,9 @@ listbin() {
 	#echo listbin $* 1>&2
 	list=""
 	for i in $* ; do
-		list="$(listbin_single "$i")" 
+		list="$(listbin_single "$i")"
 		list="$(echo ${list} | xargs -n1 | sort | uniq)"
-	done 
+	done
 	echo "$list"
 }
 listbin_recursive_worker() {

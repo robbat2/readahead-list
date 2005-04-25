@@ -1,9 +1,9 @@
 #!/bin/bash
 # Copyright 2005 Robin H. Johnson <robbat2@orbis-terrarum.net>
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /code/convert/cvsroot/infrastructure/readahead-list/contrib/scripts/set-math.sh,v 1.2 2005/03/23 06:03:46 robbat2 Exp $
+# $Header: /code/convert/cvsroot/infrastructure/readahead-list/contrib/scripts/set-math.sh,v 1.3 2005/04/25 21:43:31 robbat2 Exp $
 
-GREP=/bin/grep
+COMM=`which comm`
 
 # Call me nuts, I just wrote set functions in shell!
 # -Robin H. Johnson <robbat2@orbis-terrarum.net>
@@ -17,7 +17,7 @@ set_helper_comm() {
 	echo "$a" | xargs -n1 | sort | uniq >$tmp_a
 	echo "$b" | xargs -n1 | sort | uniq >$tmp_b
 	#echo "comm ${opt} ${tmp_a} ${tmp_b} | xargs" 1>&2
-	t="$(comm ${opt} ${tmp_a} ${tmp_b} | xargs)"
+	t="$(${COMM} ${opt} ${tmp_a} ${tmp_b} | xargs)"
 	rm -f ${tmpbase}*
 	echo $t
 }
