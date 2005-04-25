@@ -1,3 +1,34 @@
+2005-04-25 21:46  Robin H. Johnson <robbat2@orbis-terrarum.net>
+
+	Changed:
+		src/filelist-order.cxx (1.5), "Exp", lines: +3 -3
+		src/readahead-list.c (1.4), "Exp", lines: +22 -21
+
+	clean up sources, fix some spelling errors.
+
+2005-04-25 21:43  Robin H. Johnson <robbat2@orbis-terrarum.net>
+
+	Changed:
+		contrib/Makefile.am (1.2), "Exp", lines: +3 -3
+		contrib/data/Makefile.am (1.2), "Exp", lines: +4 -4
+		contrib/init/gentoo/Makefile.am (1.3), "Exp", lines: +1 -1
+		contrib/scripts/Makefile.am (1.2), "Exp", lines: +4 -4
+		contrib/scripts/build-file-list.sh (1.3), "Exp", lines: +3 -3
+		contrib/scripts/grab-runlevel-execs.sh (1.3), "Exp", lines: +2 -2
+		contrib/scripts/set-math.sh (1.3), "Exp", lines: +3 -3
+
+	clean up whitespace.
+
+2005-04-25 21:39  Robin H. Johnson <robbat2@orbis-terrarum.net>
+
+	Added:
+		contrib/init/gentoo/init.d-readahead-list-early (1.1)
+	Changed:
+		contrib/init/gentoo/conf.d-readahead-list (1.3), "Exp", lines: +4 -1
+		contrib/init/gentoo/init.d-readahead-list (1.4), "Exp", lines: +11 -9
+
+	revise scripts for gentoo.
+
 2005-03-28 09:39  Robin H. Johnson <robbat2@orbis-terrarum.net>
 
 	Changed:

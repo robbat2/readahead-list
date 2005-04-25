@@ -5,6 +5,10 @@ See the end for copying conditions.
 
 Please send readahead-list bug reports to robbat2@orbis-terrarum.net.
 
+Version 0.20050425.1452
+
+* Production-ready version, minor cleanups, and gentoo scripts redone.
+
 Version 0.20050328.0142
 
 * Add manpages. Build filelist-order with large file support. Code cleanup.
