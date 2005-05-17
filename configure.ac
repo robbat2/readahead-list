@@ -1,4 +1,4 @@
-# Copyright (C) 2004 Robin Hugh Johnson <robbat2@orbis-terrarum.net>
+# Copyright (C) 2004-2005 Robin Hugh Johnson <robbat2@orbis-terrarum.net>
 #  
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without 
@@ -10,7 +10,8 @@
 
 AC_PREREQ(2.59)
 # version stamp is 0.YYYYMMDD.HHMM in UTC!
-AC_INIT([readahead-list],[0.20050425.1452],[Robin H. Johnson robbat2@orbis-terrarum.net],[readahead-list])
+# date +"0.%Y%m%d.%H%M" -u
+AC_INIT([readahead-list],[0.20050517.0220],[Robin H. Johnson robbat2@orbis-terrarum.net],[readahead-list])
 
 LFS_CPPFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE"
 WARN_CFLAGS="-Wall -W"
