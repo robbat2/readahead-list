@@ -20,6 +20,7 @@
 #include <fstream>
 #include <vector>
 
+#include <assert.h>
 #include <string.h>
 #include <getopt.h>
 
@@ -52,8 +53,8 @@ int __STACK_DEBUG__ = 0;
 using namespace std;
 
 static char* program_name = "filelist-order";
-static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/src/filelist-order.cxx,v 1.5 2005/04/25 21:46:51 robbat2 Exp $";
-static char* program_id = "$Id: filelist-order.cxx,v 1.5 2005/04/25 21:46:51 robbat2 Exp $";
+static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/src/filelist-order.cxx,v 1.6 2005/05/17 02:12:43 robbat2 Exp $";
+static char* program_id = "$Id: filelist-order.cxx,v 1.6 2005/05/17 02:12:43 robbat2 Exp $";
 
 static int flag_input_file = 0;
 static int flag_input_stdin = 0;
