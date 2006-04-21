@@ -6,6 +6,7 @@ readahead-list: \- manual page for readahead-list: @PACKAGE_VERSION@
 [\fIOPTION\fR]... [\fIFILE\fR]...
 .SH DESCRIPTION
 Loads lists from FILE and performs readahead(2) on each entry.
+Sockets, FIFOs, devices and directories are all excluded.
 .SH OPTIONS
 .TP
 \fB\-v\fR \fB\-\-verbose\fR
