@@ -17,7 +17,7 @@
  */
 
 // Based on code originally written by Erich Schubert <erich@debian.org>.
-// $Header: /code/convert/cvsroot/infrastructure/readahead-list/src/readahead-list.c,v 1.4 2005/04/25 21:46:51 robbat2 Exp $
+// $Header: /code/convert/cvsroot/infrastructure/readahead-list/src/readahead-list.c,v 1.5 2006/04/21 10:13:54 robbat2 Exp $
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,9 +33,17 @@
 #include <errno.h>
 #include <../config.h>
 
+#if __STDC_VERSION__ < 199901L
+# if __GNUC__ >= 2
+#  define __func__ __FUNCTION__
+# else
+#  define __func__ "<unknown>"
+# endif
+#endif
+
 static char* program_name = "readahead-list";
-static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/src/readahead-list.c,v 1.4 2005/04/25 21:46:51 robbat2 Exp $";
-static char* program_id = "$Id: readahead-list.c,v 1.4 2005/04/25 21:46:51 robbat2 Exp $";
+static char* program_header = "$Header: /code/convert/cvsroot/infrastructure/readahead-list/src/readahead-list.c,v 1.5 2006/04/21 10:13:54 robbat2 Exp $";
+static char* program_id = "$Id: readahead-list.c,v 1.5 2006/04/21 10:13:54 robbat2 Exp $";
 
 // flag options
 static int flag_debug = 0;
@@ -53,7 +61,6 @@ static struct option long_options[] = {
 static char* short_options = "vdhV";
 
 void process_file(char *filename) {
-#define __FUNCTION__ "process_file"
 	int fd;
 	struct stat buf;
 	
@@ -61,51 +68,74 @@ void process_file(char *filename) {
 		return;
 	
 	if(flag_debug) {
-		fprintf(stderr,"%s:%s:%d:Attempting to readhead file: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+		fprintf(stderr,"%s:%s:%d:Considering: %s\n",__FILE__,__func__,__LINE__,filename);
 	}
-		
+
+	if (stat(filename, &buf)<0) {
+		if(flag_debug) {
+			int stat_errno;
+			stat_errno = errno;
+			switch(stat_errno) {
+				case EBADF:
+				case ENOENT:
+				case ENOTDIR:
+				case ENAMETOOLONG:
+				case ELOOP:
+				case EACCES:
+					fprintf(stderr,"%s:%s:%d:Bad path: %s\n",__FILE__,__func__,__LINE__,filename);
+					break;
+				default:
+					fprintf(stderr,"%s:%s:%d:Error on stat of %s: %d=%s\n",__FILE__,__func__,__LINE__,filename,errno,strerror(stat_errno));
+					break;
+
+			}
+		}
+		goto end;
+	}
+	/* Don't bother reading directories, devices (char or block), FIFOs or named sockets */
+	if(S_ISDIR(buf.st_mode) || S_ISCHR(buf.st_mode) || 
+			S_ISBLK(buf.st_mode) || S_ISFIFO(buf.st_mode) ||
+			S_ISSOCK(buf.st_mode))
+		goto end;
+
 	fd = open(filename,O_RDONLY);
 	if (fd<0) {
 		if(flag_debug) {
-			fprintf(stderr,"%s:%s:%d:failed to open file: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+			fprintf(stderr,"%s:%s:%d:failed to open file: %s\n",__FILE__,__func__,__LINE__,filename);
 		}
-		return;
+		goto end;
 	}
-	
-	if (fstat(fd, &buf)<0) {
-		if(flag_debug) {
-			fprintf(stderr,"%s:%s:%d:failed to fstat file: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+
+	{
+		int readahead_errno;
+		readahead(fd, (loff_t)0, (size_t)buf.st_size);
+		readahead_errno = errno;
+		switch(readahead_errno) {
+			case 0: 
+				if(flag_debug) 
+					fprintf(stderr,"%s:%s:%d:Loaded %s\n",__FILE__,__func__,__LINE__,filename);
+				if(flag_verbose) 
+					fprintf(stdout,"Loaded file:%s\n",filename);
+				break;
+			case EBADF:
+				if(flag_debug)
+					fprintf(stderr,"%s:%s:%d:Bad file: %s\n",__FILE__,__func__,__LINE__,filename);
+			case EINVAL:
+				if(flag_debug)
+					fprintf(stderr,"%s:%s:%d:Invalid filetype for readhead: %s\n",__FILE__,__func__,__LINE__,filename);
+				break;
 		}
-		return;
-	}
-	
-	readahead(fd, (loff_t)0, (size_t)buf.st_size);
-	int readahead_errno = errno;
-	switch(readahead_errno) {
-		case 0: 
-			if(flag_debug) 
-				fprintf(stderr,"%s:%s:%d:Loaded %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
-			if(flag_verbose) 
-				fprintf(stdout,"Loaded file:%s\n",filename);
-			break;
-		case EBADF:
-			if(flag_debug)
-				fprintf(stderr,"%s:%s:%d:Bad file: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
-		case EINVAL:
-			if(flag_debug)
-				fprintf(stderr,"%s:%s:%d:Invalid filetype for readhead: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
-			break;
 	}
 
 	close(fd);
+
+end:
 	/* be nice to other processes now */
 	sched_yield();
-#undef __FUNCTION__
 }
 
 #define MAXPATH 2048
 void process_files(char* filename) {
-#define __FUNCTION__ "process_files"
 	int fd;
 	char* file = NULL;
 	struct stat statbuf;
@@ -116,7 +146,7 @@ void process_files(char* filename) {
 		return;
 	
 	if(flag_debug) {
-		fprintf(stderr,"%s:%s:%d:Attempting to load list: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+		fprintf(stderr,"%s:%s:%d:Attempting to load list: %s\n",__FILE__,__func__,__LINE__,filename);
 	}
 
 	if(strcmp(filename,"-") == 0) {
@@ -128,14 +158,14 @@ void process_files(char* filename) {
 
 	if (fd<0) {
 		if(flag_debug) {
-			fprintf(stderr,"%s:%s:%d:failed to open list: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+			fprintf(stderr,"%s:%s:%d:failed to open list: %s\n",__FILE__,__func__,__LINE__,filename);
 		}
 		return;
 	}
 	
 	if (fstat(fd, &statbuf)<0) {
 		if(flag_debug) {
-			fprintf(stderr,"%s:%s:%d:failed to fstat list: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+			fprintf(stderr,"%s:%s:%d:failed to fstat list: %s\n",__FILE__,__func__,__LINE__,filename);
 		}
 		return;
 	}
@@ -144,7 +174,7 @@ void process_files(char* filename) {
 	file = mmap(0, statbuf.st_size, PROT_READ, MAP_SHARED, fd, 0);
 	if (!file || file == MAP_FAILED) {
 		if(flag_debug) {
-			fprintf(stderr,"%s:%s:%d:failed to mmap list: %s\n",__FILE__,__FUNCTION__,__LINE__,filename);
+			fprintf(stderr,"%s:%s:%d:failed to mmap list: %s\n",__FILE__,__func__,__LINE__,filename);
 		}
 		return;
 	}
@@ -159,7 +189,7 @@ void process_files(char* filename) {
 			// if the length is positive, and shorter than MAXPATH
 			// then we process it
 			if((next - iter) >= MAXPATH) {
-				fprintf(stderr,"%s:%s:%d:item in list too long!\n",__FILE__,__FUNCTION__,__LINE__);
+				fprintf(stderr,"%s:%s:%d:item in list too long!\n",__FILE__,__func__,__LINE__);
 			} else if (next-iter > 1) {
 				memcpy(buffer, iter, next-iter);
 				// replace newline with string terminator
@@ -174,7 +204,6 @@ void process_files(char* filename) {
 			iter = NULL;
 		}
 	}
-#undef __FUNCTION__
 }
 
 void skel_command_msg_exit(FILE * f, char* msg, unsigned char retval) {
@@ -220,7 +249,6 @@ void command_help() {
 }
 
 int main(int argc, char **argv) {
-#define __FUNCTION__ "main"
 	int i;
 	program_name = argv[0];
 	while(1) {
@@ -249,7 +277,7 @@ int main(int argc, char **argv) {
 				flag_verbose = 1;
 				break;
 			case 'd':
-				flag_version = 1;
+				flag_debug = 1;
 				break;
 			case 'h':
 				flag_help = 1;
