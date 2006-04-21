@@ -1,9 +1,59 @@
+2006-04-21 10:19  Robin H. Johnson <robbat2@orbis-terrarum.net>
+
+	Changed:
+		configure.ac (1.13), "Exp", lines: +2 -2;  commitid: 25af4448b19e4567;
+
+	version bump.
+
+2006-04-21 10:19  Robin H. Johnson <robbat2@orbis-terrarum.net>
+
+	Changed:
+		doc/readahead-list.8.in (1.2), "Exp", lines: +1 -0;  commitid: 25a74448b1954567;
+
+	add note on exclusion.
+
+2006-04-21 10:15  Robin H. Johnson <robbat2@orbis-terrarum.net>
+
+	Changed:
+		.cvsignore (1.7), "Exp", lines: +11 -0;  commitid: 25544448b0be4567;
+
+	fix screwup.
+
+2006-04-21 10:14  Robin H. Johnson <robbat2@orbis-terrarum.net>
+
+	Changed:
+		.cvsignore (1.6), "Exp", lines: +1 -11;  commitid: 24cc4448b0804567;
+
+	add config dir to cvsignore.
+
+2006-04-21 10:13  Robin H. Johnson <robbat2@orbis-terrarum.net>
+
+	Changed:
+		src/readahead-list.c (1.5), "Exp", lines: +69 -41;  commitid: 24af4448b0624567;
+
+	Use __func__ for function names, do validation of file types before
+	opening. Fix -d causing version instead of debug.
+
+2006-04-21 10:13  Robin H. Johnson <robbat2@orbis-terrarum.net>
+
+	Changed:
+		reconf (1.2), "Exp", lines: +14 -1;  commitid: 24814448b0314567;
+
+	Clean up reconf.
+
+2006-04-21 10:12  Robin H. Johnson <robbat2@orbis-terrarum.net>
+
+	Changed:
+		aclocal.m4 (1.5), "Exp", lines: +6 -6;  commitid: 24414448b0204567;
+
+	Update for new aclocal.
+
 2005-05-17 02:28  Robin H. Johnson <robbat2@orbis-terrarum.net>
 
 	Changed:
-		README.in (1.3), "Exp", lines: +1 -6
-		THANKS (1.2), "Exp", lines: +1 -4
-		configure.ac (1.12), "Exp", lines: +3 -2
+		README.in (1.3), "Exp", lines: +1 -6;
+		THANKS (1.2), "Exp", lines: +1 -4;
+		configure.ac (1.12), "Exp", lines: +3 -2;
 
 	minor bump for assert fix.
 
