@@ -1,4 +1,4 @@
-# generated automatically by aclocal 1.9.5 -*- Autoconf -*-
+# generated automatically by aclocal 1.9.6 -*- Autoconf -*-
 
 # Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
 # 2005  Free Software Foundation, Inc.
@@ -40,7 +40,7 @@ dnl distribution terms that you use for the rest of that program.
 #   LF_CHECK_CXX_FLAG(-flag1 -flag2 -flag3 ...)
 # -------------------------------------------------------------------------
 
-AC_DEFUN(LF_CHECK_CXX_FLAG,[
+AC_DEFUN([LF_CHECK_CXX_FLAG],[
   echo 'void f(){}' > conftest.cc
   for i in $1
   do
@@ -64,7 +64,7 @@ AC_DEFUN(LF_CHECK_CXX_FLAG,[
 #  LF_CHECK_CC_FLAG(-flag1 -flag2 -flag3 ...)
 # -------------------------------------------------------------------------
 
-AC_DEFUN(LF_CHECK_CC_FLAG,[
+AC_DEFUN([LF_CHECK_CC_FLAG],[
   echo 'void f(){}' > conftest.c
   for i in $1
   do
@@ -88,7 +88,7 @@ AC_DEFUN(LF_CHECK_CC_FLAG,[
 #  LF_CHECK_F77_FLAG(-flag1 -flag2 -flag3 ...)
 # -------------------------------------------------------------------------
 
-AC_DEFUN(LF_CHECK_F77_FLAG,[
+AC_DEFUN([LF_CHECK_F77_FLAG],[
   cat << EOF > conftest.f
 c....:++++++++++++++++++++++++
       PROGRAM MAIN
@@ -115,7 +115,7 @@ EOF
 # compilers. 
 # ----------------------------------------------------------------------
 
-AC_DEFUN(LF_SET_WARNINGS,[
+AC_DEFUN([LF_SET_WARNINGS],[
   dnl Check for --with-warnings
   AC_MSG_CHECKING([whether user wants warnings])
   AC_ARG_WITH(warnings,
@@ -156,7 +156,7 @@ AC_DEFUN([AM_AUTOMAKE_VERSION], [am__api_version="1.9"])
 # Call AM_AUTOMAKE_VERSION so it can be traced.
 # This function is AC_REQUIREd by AC_INIT_AUTOMAKE.
 AC_DEFUN([AM_SET_CURRENT_AUTOMAKE_VERSION],
-	 [AM_AUTOMAKE_VERSION([1.9.5])])
+	 [AM_AUTOMAKE_VERSION([1.9.6])])
 
 # AM_AUX_DIR_EXPAND                                         -*- Autoconf -*-
 
