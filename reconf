@@ -1,3 +1,4 @@
+#!/bin/sh
 # Copyright (C) 2004 Robin Hugh Johnson <robbat2@orbis-terrarum.net>
 #  
 # This file is free software; as a special exception the author gives
@@ -8,8 +9,20 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-#!/bin/sh
+# we use their macros
+if ! grep 'LF_' /usr/share/aclocal -rlq; then
+	echo "Autotoolset not found!"
+	exit 1
+fi
+
+# needed by new autoconf
+mkdir -pv config
+# we build it later, but do this to fool automake for now
+[ -f README ] || cat README.in >README
+
+# clean up
 rm -f config.cache
+
 echo "- aclocal."
 aclocal -I m4
 echo "- autoconf."
