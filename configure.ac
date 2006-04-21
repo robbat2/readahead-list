@@ -10,8 +10,8 @@
 
 AC_PREREQ(2.59)
 # version stamp is 0.YYYYMMDD.HHMM in UTC!
-# date +"0.%Y%m%d.%H%M" -u
-AC_INIT([readahead-list],[0.20050517.0220],[Robin H. Johnson robbat2@orbis-terrarum.net],[readahead-list])
+# date +"1.%Y%m%d.%H%M" -u
+AC_INIT([readahead-list],[1.20060421.1016],[Robin H. Johnson robbat2@orbis-terrarum.net],[readahead-list])
 
 LFS_CPPFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE"
 WARN_CFLAGS="-Wall -W"
