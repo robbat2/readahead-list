@@ -5,17 +5,24 @@ See the end for copying conditions.
 
 Please send readahead-list bug reports to robbat2@orbis-terrarum.net.
 
+Version 1.20060421.1016
+
+- Clean up processing to always exclude sockets, FIFOs, devices and
+  directories; this prevents some odd bugs like hangs on FIFOs.
+- Fix bug were -d displayed the version instead of debug information.
+- Consider stable-material, unlikely to change in future.
+
 Version 0.20050425.1452
 
-* Production-ready version, minor cleanups, and gentoo scripts redone.
+- Production-ready version, minor cleanups, and gentoo scripts redone.
 
 Version 0.20050328.0142
 
-* Add manpages. Build filelist-order with large file support. Code cleanup.
+- Add manpages. Build filelist-order with large file support. Code cleanup.
 
 Version 0.20050322.2148
 
-* First auto-tooled release. filelist-order added.
+- First auto-tooled release. filelist-order added.
 
 -------------------------------------------------------
 Copying information:
