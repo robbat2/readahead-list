@@ -1,1 +1,12 @@
 config
+Makefile.in
+configure
+configure.in
+README
+autom4te.cache
+Makefile
+stamp-h1
+config.log
+config.status
+config.h
+config.cache
