@@ -17,6 +17,7 @@
 
 #include <../config.h>
 
+#include <cstdlib>
 #include <map>
 #include <set>
 #include <iostream>
