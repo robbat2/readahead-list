@@ -14,6 +14,9 @@
 // along with this program; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
+
+#include <../config.h>
+
 #include <map>
 #include <set>
 #include <iostream>
@@ -31,7 +34,6 @@
 
 #include <fcntl.h>
 #include <linux/fs.h>
-#include <../config.h>
 
 #ifndef BUFFER_SIZE
 #define BUFFER_SIZE 2048

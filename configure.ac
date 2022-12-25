@@ -40,6 +40,9 @@ AC_PATH_PROG(CMP, cmp, cmp)
 AC_CANONICAL_HOST
 AC_PROG_RANLIB
 
+# Provides _GNU_SOURCE for readahead()
+AC_USE_SYSTEM_EXTENSIONS
+
 # Checks for header files.
 AC_CHECK_HEADERS([ errno.h fcntl.h getopt.h linux/fs.h sched.h stdio.h stdlib.h string.h sys/ioctl.h sys/mman.h sys/syscall.h sys/types.h unistd.h ])
 
