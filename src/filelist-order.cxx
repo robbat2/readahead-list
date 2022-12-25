@@ -15,8 +15,6 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 
-#include <../config.h>
-
 #include <cstdlib>
 #include <map>
 #include <set>
@@ -35,6 +33,8 @@
 
 #include <fcntl.h>
 #include <linux/fs.h>
+
+#include <../config.h>
 
 #ifndef BUFFER_SIZE
 #define BUFFER_SIZE 2048
@@ -275,7 +275,7 @@ void printItem(PAIR_COMPLETE_TYPE p,vector <OrderField*> *ofa) {
 					continue;
 				}
 				OrderField of = *ofp;
-#define case_entry(fmt,func) printf("%s"fmt,(first ? "" : " "),func_##func(mk)); break;
+#define case_entry(fmt,func) printf("%s" fmt,(first ? "" : " "),func_##func(mk)); break;
 				switch(of.type) {
 					case ST_DEV: case_entry("%lld",ST_DEV);
 					case ST_INO: case_entry("%lld",ST_INO);
