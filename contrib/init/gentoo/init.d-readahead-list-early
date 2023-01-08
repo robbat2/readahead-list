@@ -1,11 +1,9 @@
-#!/sbin/runscript
+#!/sbin/openrc-run
 # Copyright 2005 Robin H. Johnson <robbat2@orbis-terrarum.net>
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /code/convert/cvsroot/infrastructure/readahead-list/contrib/init/gentoo/init.d-readahead-list-early,v 1.1 2005/04/25 21:39:42 robbat2 Exp $
-
 
 depend() {
-	need checkroot
+	after checkroot
 	# this should start as early as possible
 	# we can't do 'before *' as that breaks it
 	before hostname modules domainname crypto-loop checkfs localmount
@@ -13,7 +11,7 @@ depend() {
 
 start() {
 	# force reading
-	source /etc/conf.d/readahead-list
+	. /etc/conf.d/readahead-list
 	f="${READAHEAD_LIST_call_early}"
 	ebegin "readahead(2): ${f}"
 	/sbin/readahead-list ${f}

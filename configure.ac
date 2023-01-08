@@ -1,29 +1,26 @@
 # Copyright (C) 2004-2005 Robin Hugh Johnson <robbat2@orbis-terrarum.net>
-#  
+#
 # This file is free software; as a special exception the author gives
-# unlimited permission to copy and/or distribute it, with or without 
+# unlimited permission to copy and/or distribute it, with or without
 # modifications, as long as this notice is preserved.
-# 
+#
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-AC_PREREQ(2.59)
+AC_PREREQ([2.71])
 # version stamp is 0.YYYYMMDD.HHMM in UTC!
 # date +"1.%Y%m%d.%H%M" -u
 AC_INIT([readahead-list],[1.20060421.1016],[Robin H. Johnson robbat2@orbis-terrarum.net],[readahead-list])
 
-LFS_CPPFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE"
 WARN_CFLAGS="-Wall -W"
 CFLAGS="$CFLAGS $WARN_CFLAGS"
 CXXFLAGS="$CXXFLAGS $WARN_CFLAGS"
-CPPFLAGS="$CPPFLAGS $LFS_CPPFLAGS"
-export CFLAGS CXXFLAGS CPPFLAGS
+export CFLAGS CXXFLAGS
 
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([dist-bzip2])
-
 
 # Checks for programs.
 AC_PROG_AWK
@@ -38,11 +35,14 @@ AC_PATH_PROG(SED, sed, sed)
 AC_PATH_PROG(CMP, cmp, cmp)
 
 AC_CANONICAL_HOST
-LF_SET_WARNINGS
 AC_PROG_RANLIB
 
+# Provides _GNU_SOURCE for readahead()
+AC_USE_SYSTEM_EXTENSIONS
+
+AC_SYS_LARGEFILE
+
 # Checks for header files.
-AC_HEADER_STDC
 AC_CHECK_HEADERS([ errno.h fcntl.h getopt.h linux/fs.h sched.h stdio.h stdlib.h string.h sys/ioctl.h sys/mman.h sys/syscall.h sys/types.h unistd.h ])
 
 # Checks for typedefs, structures, and compiler characteristics.

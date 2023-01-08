@@ -19,6 +19,7 @@
 // Based on code originally written by Erich Schubert <erich@debian.org>.
 // $Header: /code/convert/cvsroot/infrastructure/readahead-list/src/readahead-list.c,v 1.5 2006/04/21 10:13:54 robbat2 Exp $
 
+#include <../config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -31,7 +32,6 @@
 #include <sched.h>
 #include <string.h>
 #include <errno.h>
-#include <../config.h>
 
 #if __STDC_VERSION__ < 199901L
 # if __GNUC__ >= 2
